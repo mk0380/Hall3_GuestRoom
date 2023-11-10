@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const moment = require('moment')
 const bookingSchema = require('./models/guestRoom')
 const { emailToIndentorForOTP } = require('./mailing/emailToIndentForOTP')
+// const hbs = require('express-handlebars')
 
 const app = express();
 env.config({})
@@ -115,7 +116,7 @@ app.post('/details',async(req,res)=>{
 
             if(newData){
 
-                emailToIndentorForOTP()
+                emailToIndentorForOTP(name,otp,email)
 
             }else{
                 res.json({
