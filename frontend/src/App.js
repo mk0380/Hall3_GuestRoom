@@ -13,17 +13,17 @@ import { Route, Routes } from 'react-router-dom'
 
 const App = () => {
   return (
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/checkDates' element={<CheckDates/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/forgetPassword' element={<ForgetPassword/>}/>
-      <Route path='/formFillup' element={<Tabs/>}/>
-      <Route path='/cancelRoom' element={<CancelRoom/>}/>
-      <Route path='/feedback' element={<Feedback/>}/>
-      <Route path='/rules' element={<Rules/>}/>
-      <Route path='/prices' element={<Prices/>}/>
-    </Routes>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/checkDates' element={<CheckDates />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/forgetPassword' element={<ForgetPassword />} />
+        <Route path='/formFillup' element={<Tabs />} />
+        <Route path='/cancelRoom' element={<CancelRoom />} />
+        <Route path='/feedback' element={<Feedback />} />
+        <Route path='/rules' element={<Rules />} />
+        <Route path='/prices' element={<Prices />} />
+      </Routes>
   )
 }
 

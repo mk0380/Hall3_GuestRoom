@@ -44,6 +44,8 @@ const CheckDates = () => {
 
   const checkStatus = async () => {
     const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate }, config)
+    localStorage.setItem("arrivalDate",data.arrivalDate)
+    localStorage.setItem("departureDate",data.departureDate)
   }
 
   const navigate = useNavigate()
@@ -102,8 +104,8 @@ const CheckDates = () => {
               <p>-:Double Bed</p>
             </div>
             <div className="room_size">
-              <p>R1  -</p>
-              <p>-:Single Bed</p>
+              <p>R3  -</p>
+              <p>-:Triple Bed</p>
             </div>
           </div>
           <div className="result">

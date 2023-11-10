@@ -5,8 +5,15 @@ const gusetRoomSchema  = mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    confirmedAt:{
-        type:Date
+    OTP:{
+        value:{
+            type:String,
+            default:null
+        },
+        expiryTime:{
+            type:Date,
+            default:null
+        }
     },
     numberOfPersons:{
         type:String
@@ -21,20 +28,17 @@ const gusetRoomSchema  = mongoose.Schema({
     purposeOfVisit:{
         type:String
     },
-    checkArrivalDate:{
-        type:Date
+    arrivalDate:{
+        type:String
     },
-    checkDepartureDate:{
-        type:Date
+    departureDate:{
+        type:String
     },
     roomDetails:{
         roomNo:{
             type:String
         },
-        arrivalDate:{
-            type:String
-        },
-        departureDate:{
+        roomType:{
             type:String
         }
     },
@@ -42,7 +46,7 @@ const gusetRoomSchema  = mongoose.Schema({
         name:{
             type:String
         },
-        rollNo:{
+        roll:{
             type:String
         },
         email:{

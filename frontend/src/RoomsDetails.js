@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import React, {useContext, useState } from 'react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
+import { FormContext } from './context/FormContext';
 
 const RoomsDetails = ({tabChange, tab}) => {
 
   const [persons, setPersons] = useState(0)
-
+  const {set_no_person_global, set_room_no_global, set_room_type_global} = useContext(FormContext)
   const checkNoOfPerson = ()=>{
-    if(persons>2 || persons===0){
+    if(persons>3 || persons<=0 || !persons){
       return true
     }else{
       return false
@@ -17,6 +18,9 @@ const RoomsDetails = ({tabChange, tab}) => {
 
   const changeHandler = (ev)=>{
     setPersons(ev.target.value)
+    set_no_person_global(ev.target.value)
+    set_room_no_global("ROOM_NO")
+    set_room_type_global("ROOM_TYPE")
   }
 
   return (
@@ -53,7 +57,7 @@ const RoomsDetails = ({tabChange, tab}) => {
         <TextField
           id="outlined-read-only-input"
           label="ARRIVAL DATE"
-          defaultValue="Hello World"
+          defaultValue={localStorage.getItem("arrivalDate")}
           InputProps={{
             readOnly: true,
           }}
@@ -61,7 +65,7 @@ const RoomsDetails = ({tabChange, tab}) => {
         <TextField
           id="outlined-read-only-input"
           label="DEPARTURE DATE"
-          defaultValue="Hello World"
+          defaultValue={localStorage.getItem("departureDate")}
           InputProps={{
             readOnly: true,
           }}

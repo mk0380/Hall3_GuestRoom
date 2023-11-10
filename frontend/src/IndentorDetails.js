@@ -1,10 +1,15 @@
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { FormContext } from './context/FormContext'
+import axios from 'axios'
+import BACKEND_URL from './important_data/backendUrl'
 
 const IndentorDetails = ({tabChange, tab}) => {
 
   const [check1, setcheck1] = useState(false)
   const [check2, setcheck2] = useState(false)
+
+  const { no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global } = useContext(FormContext)
 
   const [indentor, setIndentor] = useState({
     name:"",
@@ -23,6 +28,23 @@ const IndentorDetails = ({tabChange, tab}) => {
       return true
     }
     return false
+  }
+
+  const config = {
+    headers: {
+      "Content-type": "application/json"
+    }
+  }
+
+  const sumbitHandler =async ()=>{
+    // console.log(name1_global);
+    const details = {
+      ...indentor, no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global,checkArrivalDate:localStorage.getItem("arrivalDate"),checkDepartureDate:localStorage.getItem("departureDate")
+    }
+
+    console.log(details);
+
+    const {data} = await axios.post(BACKEND_URL+'/details',details,config)
   }
 
   return (
@@ -106,7 +128,7 @@ const IndentorDetails = ({tabChange, tab}) => {
         noValidate
         autoComplete="off">
         <Button variant="outlined" style={{marginRight:"1rem", marginTop:"0.5rem"}} onClick={(_)=>tabChange('2')}>Prev</Button>
-        <Button variant="outlined" disabled={checkIndentor()} style={{marginTop:"0.5rem"}}>Submit</Button>
+        <Button variant="outlined" disabled={checkIndentor()} style={{marginTop:"0.5rem"}} onClick={sumbitHandler}>Submit</Button>
       </Box>
     </div>
   )
