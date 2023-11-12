@@ -71,6 +71,7 @@ const VisitorDetails = ({tabChange, tab}) => {
           label="Person 1 Name"
           value={visitor.name1}
           name='name1'
+          onkeydown="return /[a-z]/i.test(event.key)"
           onChange={changeHandler}
           error={visitor.name1.trim().length===0}
         />
@@ -91,35 +92,6 @@ const VisitorDetails = ({tabChange, tab}) => {
           error={visitor.name3.trim().length===0}
         />}
       </Box>
-
-      {/* <Box component="form"
-        sx={{
-          '& .MuiTextField-root': { m: 2, width: '25ch' },
-        }}
-        noValidate
-        autoComplete="off">
-        <FormControl sx={{minWidth: 200, m:2 }} required>
-          <InputLabel>Gender Person 1</InputLabel>
-          <Select
-            label="Gender Person 1"
-          >
-            <MenuItem value={10}>Male</MenuItem>
-            <MenuItem value={20}>Female</MenuItem>
-            <MenuItem value={30}>Prefer Not to Say</MenuItem>
-          </Select>
-        </FormControl>
-
-        <FormControl sx={{minWidth: 200, m:2 }}>
-          <InputLabel>Gender Person 2</InputLabel>
-          <Select
-            label="Gender Person 2"
-          >
-            <MenuItem value={10}>Male</MenuItem>
-            <MenuItem value={20}>Female</MenuItem>
-            <MenuItem value={30}>Prefer Not to Say</MenuItem>
-          </Select>
-        </FormControl>
-      </Box> */}
 
       <Box component="form"
         sx={{

@@ -5,7 +5,9 @@ const mongoose = require('mongoose')
 const moment = require('moment')
 const bookingSchema = require('./models/guestRoom')
 const { emailToIndentorForOTP } = require('./mailing/emailToIndentForOTP')
-// const hbs = require('express-handlebars')
+
+// git add . git commit -m "" git push 
+
 
 const app = express();
 env.config({})
@@ -26,7 +28,7 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
 })
 
 
-app.post('/checkDates',async (req,res)=>{
+app.post('/checkDates', async (req, res) => {
     try {
         const arrivalDate = req.body.arrivalDate
         const departureDate = req.body.departureDate
@@ -39,8 +41,8 @@ app.post('/checkDates',async (req,res)=>{
 
         var isRoomsAvailable = true;
 
-        allBookings.map((eachBooking)=>{
-            if(arrivalDate>eachBooking.checkArrivalDate && arrivalDate<eachBooking.checkDepartureDate){
+        allBookings.map((eachBooking) => {
+            if (arrivalDate > eachBooking.checkArrivalDate && arrivalDate < eachBooking.checkDepartureDate) {
                 isRoomsAvailable = false
             }
         })
@@ -48,64 +50,66 @@ app.post('/checkDates',async (req,res)=>{
         // if(isRoomsAvailable){
         //     res.json({
         //         success:true,
-                
+
         //     })
         // }
-    
+
         const readable_arrivalDate = moment(arrivalDate).format('DD/MM/YYYY')
         const readable_departureDate = moment(departureDate).format('DD/MM/YYYY')
 
 
         res.json({
-            success:true,
-            arrivalDate:readable_arrivalDate,
-            departureDate:readable_departureDate
+            success: true,
+            arrivalDate: readable_arrivalDate,
+            departureDate: readable_departureDate
         })
 
     } catch (error) {
         res.json({
-            success:false,
-            message:"Some error occured"
+            success: false,
+            message: "Some error occured"
         })
     }
 })
 
 
-app.post('/details',async(req,res)=>{
+app.post('/details', async (req, res) => {
     try {
 
-        const { name, phone, roll, email, no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global, checkArrivalDate,checkDepartureDate} = req.body
+        const { name, phone, roll, email, no_person_global, name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global, purpose_global, relationship1_global, relationship2_global, relationship3_global, room_type_global, room_no_global, checkArrivalDate, checkDepartureDate } = req.body
 
-        var data = new bookingSchema ({
-            indentorDetails:{
-                name,roll,email,phone
+        var data = new bookingSchema({
+            indentorDetails: {
+                name, roll, email, phone
             },
-            numberOfPersons:no_person_global,
-            totalCost:"100",
-            purposeOfVisit:purpose_global,
-            arrivalDate:checkArrivalDate,
-            departureDate:checkDepartureDate,
-            roomDetails:{
-                roomNo:room_no_global,
-                roomType:room_type_global
+            numberOfPersons: no_person_global,
+            totalCost: "100",
+            purposeOfVisit: purpose_global,
+            arrivalDate: checkArrivalDate,
+            departureDate: checkDepartureDate,
+            roomDetails: {
+                roomNo: room_no_global,
+                roomType: room_type_global
             },
-            visitorDetails:[
-                {name:name1_global,
-                relationship:relationship1_global,
-                phone:mobile1_global},{
-                name:name2_global,
-                relationship:relationship2_global,
-                phone:mobile2_global
-                },{
-                name:name3_global,
-                relationship:relationship3_global,
-                phone:mobile3_global
+            visitorDetails: [
+                {
+                    name: name1_global,
+                    relationship: relationship1_global,
+                    phone: mobile1_global
+                }, {
+                    name: name2_global,
+                    relationship: relationship2_global,
+                    phone: mobile2_global
+                }, {
+                    name: name3_global,
+                    relationship: relationship3_global,
+                    phone: mobile3_global
                 }
             ]
         })
-        const res = await data.save()
+        const result = await data.save()
 
-        if(res){
+        if (result) {
             const otp = Math.floor(100000 + Math.random() * 900000)
             const expiry_time = moment(Date.now()).add(10, 'm').toDate();  // 10 minutes for otp entry
 
@@ -114,28 +118,78 @@ app.post('/details',async(req,res)=>{
 
             const newData = await data.save()
 
-            if(newData){
+            if (newData) {
 
-                emailToIndentorForOTP(name,otp,email)
+                emailToIndentorForOTP(name, otp, email)
 
+                res.json({
+                    success: true,
+                    id:newData._id
+                })
+
+            } else {
+                res.json({
+                    success: false,
+                    message: "Some Error Occured"
+                })
+            }
+        } else {
+            res.json({
+                success: false,
+                message: "Some Error Occured"
+            })
+        }
+
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Some error occured"
+        })
+    }
+})
+
+app.post('/checkOTP', async(req,res)=>{
+    try {
+
+        const { otp_password, requestId } = req.body
+        const checkData = await bookingSchema.findById(requestId)
+
+        if(checkData){
+            if(checkData.OTP.value===otp_password){
+                const time1 = new Date(moment(Date.now()).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                const time2 = new Date(moment(checkData.OTP.expiryTime).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                if(time2>=time1){
+                    res.json({
+                        success: true,
+                        message: "Your request is pending for warden approval. Once approved you will be notified via email."
+                    })
+
+                }else{
+                    res.json({
+                        success: false,
+                        message: "Time for the OTP expired"
+                    })
+                }
             }else{
                 res.json({
-                    success:false,
-                    message:"Some Error Occured"
-                }) 
+                    success: false,
+                    message: "Incorrect OTP"
+                })
             }
         }else{
             res.json({
-                success:false,
-                message:"Some Error Occured"
-            })
+                success: false,
+                message: "Some error occured"
+            })  
         }
+
         
     } catch (error) {
+        console.log(error.message);
         res.json({
-            success:false,
-            message:"Some error occured"
-        })  
+            success: false,
+            message: "Some error occured"
+        })
     }
 })
 

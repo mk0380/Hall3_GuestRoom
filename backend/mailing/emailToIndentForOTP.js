@@ -28,10 +28,10 @@ const emailToIndentorForOTP = (name,otp,email) => {
   var mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Guest Room Booking OTP for Hall 3 - Action Required',
+    subject: 'Guest Room Booking OTP for Hall 3',
     template: 'emailToIndentForOTP',
     context: {
-      title: 'Guest Room Booking OTP for Hall 3 - Action Required',
+      title: 'Guest Room Booking OTP for Hall 3',
       name: name,
       otp: otp,
 
@@ -39,11 +39,13 @@ const emailToIndentorForOTP = (name,otp,email) => {
 
   };
 
+  var success = false, message=null
+
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
+      console.log(error.message);
     } else {
-      console.log('Email sent: ' + info.response);
+      console.log("OTP mail sent successfully");
     }
   });
 }
