@@ -1,10 +1,43 @@
 import { Box, TextField } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios'
+import BACKEND_URL from './important_data/backendUrl';
+import { useNavigate } from 'react-router-dom';
 
 
 const Login = () => {
+
+    const naviagte = useNavigate()
+
+    const [user, setUser] = useState({
+        email:"",
+        password:""
+    })
+
+    const changeHandler = (ev) =>{
+        setUser({
+            ...user,[ev.target.name]:ev.target.value
+        })
+    }
+
+    const config = {
+        headers: {
+          "Content-type": "application/json"
+        }
+      }
+
+    const login =async () =>{
+        const {data} = await axios.post(BACKEND_URL+"/login", user, config)
+
+        if(data.success){
+            localStorage.setItem("id",data.id)
+            naviagte('/dashboard')
+        }
+
+    }
+
     return (
         <div className='home'>
             <div className="container">
@@ -23,9 +56,11 @@ const Login = () => {
                             id="outlined-read-only-input"
                             label="Email"
                             type='email'
-                            helperText="Login access only to WardenInCharge and Hall Office"
+                            name='email'
+                            value={user.email}
+                            onChange={changeHandler}
                             InputProps={{
-                                readOnly: true,
+                                readOnly: false,
                             }}
                         />
                     </Box>
@@ -38,9 +73,12 @@ const Login = () => {
                         <TextField
                             id="outlined-read-only-input"
                             label="Password"
+                            value={user.password}
+                            onChange={changeHandler}
                             type='password'
+                            name='password'
                             InputProps={{
-                                readOnly: true,
+                                readOnly: false,
                             }}
                         />
                     </Box>
@@ -50,20 +88,14 @@ const Login = () => {
                         }}
                         noValidate
                         autoComplete="off">
-                        <Button variant="outlined">Login</Button>
+                        <Button variant="outlined" onClick={login}>Login</Button>
 
                     </Box>
-                    <Box component="form"
-                        sx={{
-                            '& .MuiTextField-root': {margin:"2",width: '25ch' },
-                        }}
-                        noValidate
-                        autoComplete="off">
-                        {/* <Button variant="outlined">Forget Passowrd</Button> */}
+                        <div className='forget'>
+                        <NavLink  to={'/forgetPassword'}>Forget Password ?</NavLink>
 
-                        <NavLink  to={'/forgetPassword'}>Forget Password</NavLink>
+                        </div>
 
-                    </Box>
                 </div>
             </div>
         </div>

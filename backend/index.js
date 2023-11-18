@@ -4,7 +4,10 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const moment = require('moment')
 const bookingSchema = require('./models/guestRoom')
+const userSchema = require('./models/userSchema')
 const { emailToIndentorForOTP } = require('./mailing/emailToIndentForOTP')
+const validEmail  = require('./important_data/validEmailLogin')
+const { sendForgetPasswordMail } = require('./mailing/sendForgetPasswordMail')
 
 // git add . git commit -m "" git push 
 
@@ -190,6 +193,232 @@ app.post('/checkOTP', async(req,res)=>{
             success: false,
             message: "Some error occured"
         })
+    }
+})
+
+const checkValidEmailLogin = (email) =>{
+    var res = false;
+
+    validEmail.map((mail)=>{
+        if(mail===email){
+            res = true
+        }
+    })
+
+    return res
+}
+
+app.post('/login',async (req,res)=>{
+    try {
+        const { email, password } = req.body;
+
+        if(checkValidEmailLogin(email)){
+
+            const ifSignUp = await userSchema.findOne({email:email})
+
+            if(ifSignUp){
+
+                if(ifSignUp.password===password){
+
+                    res.json({
+                        success:true,
+                        message:"Login successfully",
+                        id:ifSignUp._id
+                    })
+                }else{
+                    res.json({
+                        success:false,
+                        message:"Invalid credentials"
+                    }) 
+                }
+
+            }else{
+
+
+                if(password.trim().length<6){
+                    return res.json({
+                        success:false,
+                        message:"Choose another password with minumum length of"
+                    })
+                }
+
+                const data = new userSchema({email,password})
+                const result =  await data.save()
+
+                res.json({
+                    success:true,
+                    message:"Login successfully",
+                    id:result._id
+                })
+
+            }
+
+        }else{
+            res.json({
+                success: false,
+                message: "Email not authorised"
+            })
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
+    }
+})
+
+app.post('/forgetPasword',async (req,res)=>{
+    try {
+
+        const {email} = req.body;
+
+        // console.log(req.body);
+
+        if(checkValidEmailLogin(email)){
+
+            const result = await userSchema.findOne({email:email})
+
+            // console.log(result);
+
+            if(result){
+        
+                result.OTP.value = Math.floor(100000 + Math.random() * 900000)
+                result.OTP.expiryTime = moment(Date.now()).add(10, 'm').toDate();
+
+                const newData = await result.save()
+
+                if(newData){
+                    
+                    sendForgetPasswordMail(newData.OTP.value,email)
+
+                    res.json({
+                        success:true,
+                        message:"Please check your email for OTP"
+                    })
+
+                }else{
+                    res.json({
+                        success: false,
+                        message: "Error Occured"
+                    })
+                }
+
+            }else{
+                res.json({
+                    success: false,
+                    message: "Email not registered"
+                })
+            }
+
+        }else{
+            res.json({
+                success: false,
+                message: "Email not authorised"
+            })  
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
+    }
+})
+
+app.post('/validateOTP',async(req,res)=>{
+    try {
+
+        const {otp,email} = req.body;
+
+        const userExist = await userSchema.findOne({email});
+
+        if(userExist){
+
+            if(userExist.OTP.value===otp){
+                const time1 = new Date(moment(Date.now()).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                const time2 = new Date(moment(userExist.OTP.expiryTime).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                if(time2>=time1){
+
+                    userExist.OTP.value = null
+                    userExist.OTP.expiryTime = null
+
+                    await userExist.save()
+
+                    res.json({
+                        success: true,
+                    })
+
+                }else{
+                    res.json({
+                        success: false,
+                        message: "Time for the OTP expired"
+                    })
+                }
+            }else{
+                res.json({
+                    success: false,
+                    message: "Incorrect OTP"
+                })
+            }
+
+        }else{
+            res.json({
+                success: false,
+                message: "Unauthorised User"
+            }) 
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        })
+    }
+})
+
+app.post('/passwordChange',async(req,res)=>{
+    try {
+
+        const {newPassword,email} = req.body;
+
+        if(newPassword.trim().length<6){
+            return res.json({
+                success:false,
+                message:"Choose another password with minumum length of"
+            })
+        }
+
+        const userExist = await userSchema.findOne({email})
+
+        if(userExist){
+
+            userExist.password = newPassword
+
+            await userExist.save();
+
+            res.json({
+                success: true,
+                message: "Password changed successfully"
+            })
+
+        }else{
+            res.json({
+                success: false,
+                message: "Unauthorised User"
+            }) 
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
     }
 })
 

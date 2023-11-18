@@ -8,6 +8,7 @@ import Rules from './Rules.js'
 import Prices from './Prices.js'
 import Tabs from './Tabs.js'
 import Login from './Login.js'
+import Dashboard from './Dashboard.js'
 import ForgetPassword from './ForgetPassword.js'
 import { Route, Routes } from 'react-router-dom'
 
@@ -17,6 +18,7 @@ const App = () => {
         <Route path='/' element={<Home />} />
         <Route path='/checkDates' element={<CheckDates />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/forgetPassword' element={<ForgetPassword />} />
         <Route path='/formFillup' element={<Tabs />} />
         <Route path='/cancelRoom' element={<CancelRoom />} />

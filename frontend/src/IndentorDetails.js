@@ -45,8 +45,6 @@ const IndentorDetails = ({tabChange, tab}) => {
       ...indentor, no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global,checkArrivalDate:localStorage.getItem("arrivalDate"),checkDepartureDate:localStorage.getItem("departureDate")
     }
 
-    console.log(details);
-
     const {data} = await axios.post(BACKEND_URL+'/details',details,config)
 
     console.log(data);
