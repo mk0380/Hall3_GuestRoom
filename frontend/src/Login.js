@@ -1,5 +1,5 @@
 import { Box, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios'
@@ -10,6 +10,12 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
 
     const naviagte = useNavigate()
+
+    useEffect(() => {
+        if(localStorage.getItem("id")){
+          naviagte('/dashboard')
+        }
+      }, [])
 
     const [user, setUser] = useState({
         email:"",

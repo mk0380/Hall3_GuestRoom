@@ -1,5 +1,5 @@
 import { Box, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@mui/material';
 import axios from 'axios';
 import BACKEND_URL from './important_data/backendUrl';
@@ -15,6 +15,12 @@ const Login = () => {
     const [email, setEmail] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [otp, setOTP] = useState("")
+
+    useEffect(() => {
+        if(localStorage.getItem("id")){
+          navigate('/dashboard')
+        }
+      }, [])
 
     const config = {
         headers: {

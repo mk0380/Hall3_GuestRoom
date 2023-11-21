@@ -281,6 +281,19 @@ input[type=number]::-webkit-outer-spin-button {
   text-decoration: none;
 }
 
+.tab{
+  /* border: 2px solid red; */
+  display: flex;
+  align-items: center;
+  margin: 10px auto;
+  justify-content: space-around;
+}
+
+.search {
+  flex: 0.9;
+  margin-left: 10%;
+}
+
 
 
 
