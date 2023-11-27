@@ -337,6 +337,21 @@ input[type=number]::-webkit-outer-spin-button {
   background-color: black;
 }
 
+.table{
+  width: 98%;
+  margin: 0 auto;
+}
+
+.container{
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.container::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
+
 
 
 
