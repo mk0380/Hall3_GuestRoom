@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import TextField from "@mui/material/TextField";
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +38,7 @@ const Dashboard = () => {
             />
           </div>
 
-          <div><Button>Change Password</Button></div>
+          <div><Button onClick={() => navigate('/changePassword')}>Change Password</Button></div>
           <div><Button onClick={logout} >Logout</Button></div>
         </div>
       </div>

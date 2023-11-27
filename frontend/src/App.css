@@ -294,6 +294,48 @@ input[type=number]::-webkit-outer-spin-button {
   margin-left: 10%;
 }
 
+.overall{
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.columns{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.room{
+  /* justify-content: space-around;
+  align-items: center; */
+  width: 44px;
+  height: 14px;
+}
+
+.room_no{
+  display: flex;
+  flex-direction: column;
+}
+
+.green1{
+  background-color: green;
+}
+
+.red1{
+  background-color: red;
+}
+
+.yellow1{
+  background-color: yellow;
+}
+
+.black1{
+  background-color: black;
+}
 
 
 

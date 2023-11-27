@@ -389,7 +389,7 @@ app.post('/passwordChange',async(req,res)=>{
         if(newPassword.trim().length<6){
             return res.json({
                 success:false,
-                message:"Choose another password with minumum length of"
+                message:"Choose another password with minumum length of 6 with no spaces"
             })
         }
 
@@ -422,6 +422,106 @@ app.post('/passwordChange',async(req,res)=>{
     }
 })
 
+
+app.post('/setPassword',async(req,res)=>{
+    try {
+
+        const {newPassword, id} = req.body;
+
+        if(newPassword.trim().length<6){
+            return res.json({
+                success:false,
+                message:"Choose another password with minumum length of 6 with no spaces"
+            })
+        }
+
+        const userExist = await userSchema.findById(id)
+
+        if(userExist){
+
+            userExist.OTP.value = Math.floor(100000 + Math.random() * 900000)
+            userExist.OTP.expiryTime = moment(Date.now()).add(10, 'm').toDate();
+
+            const newData =  await userExist.save();
+
+            sendForgetPasswordMail(newData.OTP.value,newData.email)
+
+            res.json({
+                success: true,
+                message: "Please check your email for OTP"
+            })
+
+        }else{
+            res.json({
+                success: false,
+                message: "Unauthorised User"
+            }) 
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
+    }
+})
+
+
+app.post('/setPasswordValidateOTP',async(req,res)=>{
+    try {
+
+        const {otp,id, newPassword} = req.body;
+
+        const userExist = await userSchema.findById(id);
+
+        if(userExist){
+
+            if(userExist.OTP.value===otp){
+                const time1 = new Date(moment(Date.now()).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                const time2 = new Date(moment(userExist.OTP.expiryTime).format("YYYY-MM-DDTHH:mm:ssZZ"))
+                if(time2>=time1){
+
+                    userExist.OTP.value = null
+                    userExist.OTP.expiryTime = null
+                    userExist.password = newPassword
+
+                    await userExist.save()
+
+                    res.json({
+                        success: true,
+                        message:"Password Changed Successfully"
+                    })
+
+                }else{
+                    res.json({
+                        success: false,
+                        message: "Time for the OTP expired"
+                    })
+                }
+            }else{
+                res.json({
+                    success: false,
+                    message: "Incorrect OTP"
+                })
+            }
+
+        }else{
+            res.json({
+                success: false,
+                message: "Unauthorised User"
+            }) 
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        })
+    }
+})
 
 
 

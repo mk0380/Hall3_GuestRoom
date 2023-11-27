@@ -11,6 +11,7 @@ import Login from './Login.js'
 import Dashboard from './Dashboard.js'
 import ForgetPassword from './ForgetPassword.js'
 import { Route, Routes } from 'react-router-dom'
+import ChangePassword from './ChangePassword.js'
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/forgetPassword' element={<ForgetPassword />} />
+        <Route path='/changePassword' element={<ChangePassword />} />
         <Route path='/formFillup' element={<Tabs />} />
         <Route path='/cancelRoom' element={<CancelRoom />} />
         <Route path='/feedback' element={<Feedback />} />

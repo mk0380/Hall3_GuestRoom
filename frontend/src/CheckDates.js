@@ -28,7 +28,7 @@ const CheckDates = () => {
       const d2 = dayjs(departureDate);
 
       const noOfDays = d2.diff(d1, 'day')
-      if (noOfDays > 6 || d1>d2) {
+      if (noOfDays > 6 || d1 > d2) {
         return true
       } else {
         return false
@@ -44,11 +44,19 @@ const CheckDates = () => {
 
   const checkStatus = async () => {
     const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate }, config)
-    localStorage.setItem("arrivalDate",data.arrivalDate)
-    localStorage.setItem("departureDate",data.departureDate)
+    localStorage.setItem("arrivalDate", data.arrivalDate)
+    localStorage.setItem("departureDate", data.departureDate)
   }
 
   const navigate = useNavigate()
+
+  const colorList = [["0", "0", "-1", "1", "1"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"]]
 
   return (
     <div className='home'>
@@ -110,6 +118,58 @@ const CheckDates = () => {
           </div>
           <div className="result">
             <h5>Rooms Availability Status</h5>
+
+            <div className="overall">
+
+              <div className="columns">
+
+                <div className="date" style={{fontWeight:"bolder"}}>Select</div>
+
+                  <input type="radio" value="option1" name='option' />
+                  <input type="radio" value="option1" name='option' />
+                  <input type="radio" value="option1" name='option' />
+                  <input type="radio" value="option1" name='option' />    
+                  <input type="radio" value="option1" name='option' />
+
+              </div>
+
+              <div className="columns">
+                <div className="date" style={{fontWeight:"bolder"}}>RoomNo</div>
+
+                <label>
+                  109 R3
+                </label>
+
+                <label>
+                  109 R3
+                </label>
+
+                <label>
+                  109 R3
+                </label>
+
+                <label>
+                  109 R3
+                </label>
+
+                <label>
+                  109 R3
+                </label>
+
+              </div>
+
+
+              {[...Array(7)].map((e, i) => <div className="columns">
+
+                <div className="date" style={{fontWeight:"bolder"}}>1{i + 1}/11/23</div>
+                <div className={"" + ((colorList[i][0] === "1" ? "green1 room" : colorList[i][0] === "-1" ? "red1 room" : colorList[i][0] === "0" ? "yellow1 room" : "black1 room"))}></div>
+                <div className={"" + ((colorList[i][1] === "1" ? "green1 room" : colorList[i][1] === "-1" ? "red1 room" : colorList[i][1] === "0" ? "yellow1 room" : "black1 room"))}></div>
+                <div className={"" + ((colorList[i][2] === "1" ? "green1 room" : colorList[i][2] === "-1" ? "red1 room" : colorList[i][2] === "0" ? "yellow1 room" : "black1 room"))}></div>
+                <div className={"" + ((colorList[i][3] === "1" ? "green1 room" : colorList[i][3] === "-1" ? "red1 room" : colorList[i][3] === "0" ? "yellow1 room" : "black1 room"))}></div>
+                <div className={"" + ((colorList[i][4] === "1" ? "green1 room" : colorList[i][4] === "-1" ? "red1 room" : colorList[i][4] === "0" ? "yellow1 room" : "black1 room"))}></div>
+              </div>)}
+
+            </div>
           </div>
         </div>
         <div className='book_btn'>
