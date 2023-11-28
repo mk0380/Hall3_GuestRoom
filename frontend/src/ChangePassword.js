@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import axios from 'axios';
 import BACKEND_URL from './important_data/backendUrl';
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify';
 
 
 const ChangePassword = () => {
@@ -30,6 +31,9 @@ const ChangePassword = () => {
         const { data } = await axios.post(BACKEND_URL + "/setPasswordValidateOTP", { otp,id:localStorage.getItem("id"),newPassword}, config)
         if (data.success) {
             navigate('/dashboard')
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
 
     }
@@ -40,7 +44,9 @@ const ChangePassword = () => {
 
         if (data.success) {
             setDisabled(true)
-
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
 
     }

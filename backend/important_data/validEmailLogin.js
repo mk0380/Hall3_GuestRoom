@@ -1,3 +1,3 @@
-const validEmail = ["warden@iitk.ac.in","hall@iitk.ac.in","mayankkr21@iitk.ac.in"]
+const validEmail = ["mayankkumar0380@gmail.com","mayankkumar8766@gmail.com"]
 
 module.exports = validEmail

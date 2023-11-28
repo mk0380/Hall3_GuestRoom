@@ -3,14 +3,19 @@ import React, { useContext, useState } from 'react'
 import { FormContext } from './context/FormContext'
 import axios from 'axios'
 import BACKEND_URL from './important_data/backendUrl'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const IndentorDetails = ({tabChange, tab}) => {
+
+  const navigate = useNavigate()
 
   const [check1, setcheck1] = useState(false)
   const [check2, setcheck2] = useState(false)
   const [otp, setOtp] = useState(false)
   const [otp_password, setOtp_password] = useState("")
   const [requestId, setRequestId] = useState("")
+  const [disableOTP, setDisableOTP] = useState(false)
 
   const { no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global } = useContext(FormContext)
 
@@ -23,7 +28,6 @@ const IndentorDetails = ({tabChange, tab}) => {
 
   const changeHandler = (ev)=>{
     setIndentor({...indentor, [ev.target.name]:ev.target.value})
-    // console.log(visitor);
   }
 
   const checkIndentor = ()=>{
@@ -40,27 +44,32 @@ const IndentorDetails = ({tabChange, tab}) => {
   }
 
   const sumbitHandler =async ()=>{
-    // console.log(name1_global);
     const details = {
       ...indentor, no_person_global,name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global,purpose_global,relationship1_global,relationship2_global,relationship3_global, room_type_global, room_no_global,checkArrivalDate:localStorage.getItem("arrivalDate"),checkDepartureDate:localStorage.getItem("departureDate")
     }
 
     const {data} = await axios.post(BACKEND_URL+'/details',details,config)
 
-    console.log(data);
-
     if(data.success){
       setOtp(true)
       setRequestId(data.id)
+      toast.success(data.message)
+    }else{
+      toast.error(data.message)
     }
   }
 
   const checkOTPHandler =async ()=>{
     const {data} = await axios.post(BACKEND_URL+'/checkOTP',{otp_password, requestId},config)
-
-    console.log(data);
-
     setOtp_password("")
+    if(data.success){
+      toast.success(data.message)
+      setDisableOTP(true)
+      localStorage.clear()
+      navigate('/')
+    }else{
+      toast.error(data.message)
+    }
 
   }
 
@@ -148,6 +157,7 @@ const IndentorDetails = ({tabChange, tab}) => {
           label="OTP"
           type='text'
           name='otp_password'
+          disabled={disableOTP}
           value={otp_password}
           onChange={(ev)=>setOtp_password(ev.target.value)}
           error={otp_password.trim().length===0}

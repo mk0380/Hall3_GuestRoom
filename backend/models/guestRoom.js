@@ -5,6 +5,16 @@ const gusetRoomSchema  = mongoose.Schema({
         type:Date,
         default:Date.now
     },
+    bookingId:{
+        type:String
+    },
+    approvalLevel:{
+        type:String,
+        default:"0"
+    },
+    rejectionReason:{
+        type:String
+    },
     OTP:{
         value:{
             type:String,

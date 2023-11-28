@@ -1,34 +1,51 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
+import { Box, Button, IconButton, Modal, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MaterialTable from 'material-table'
+import { toast } from 'react-toastify';
+import BACKEND_URL from './important_data/backendUrl';
+import axios from 'axios';
 
 
 const Dashboard = () => {
 
   const navigate = useNavigate();
-  const [tableData, setTableData] = useState([
-    { booking_id: "abc1234", name: "Mayank Kumar", roll: "21059666", number: "1234567890", amount: "1111", detail: "View Details", action: "accept/reject", status: "accepted" },
-    { booking_id: "abc1234", name: "M1ayank Kumar", roll: "121059666", number: "1234567890", amount: "1111", detail: "View Details", action: "accept/reject", status: "accepted" },
-    { booking_id: "abc12345", name: "M1ayank Kumar", roll: "121059666", number: "1234567890", amount: "1111", detail: "View Details", action: "accept/reject", status: "accepted" },
-    { booking_id: "abc12345", name: "M1ayank Kumar", roll: "121059666", number: "1234567890", amount: "1111", detail: "View Details", action: "accept/reject", status: "accepted" },
-    { booking_id: "abc12345", name: "M1ayank Kumar", roll: "121059666", number: "1234567890", amount: "1111", detail: "View Details", action: "accept/reject", status: "accepted" },
-  ])
+  const [tableData, setTableData] = useState([])
+  const [modalData, setModalData] = useState({roomDetails:{roomNo:"",roomType:""}, arrivalDate:"",departureDate:"",visitorDetails:[{name:"",relationship:"",phone:""},{name:"",relationship:"",phone:""},{name:"",relationship:"",phone:""}],indentorDetails:{name:"",roll:"",email:"",phone:""}, purposeOfVisit:"" })
 
   const logout = () => {
     localStorage.removeItem("id")
     navigate('/login')
+    localStorage.clear()
+    toast.success("Logout successfully")
+  }
+
+  const fetchData = async()=>{
+    const { data }  = await axios.post(BACKEND_URL+'/fetchData',{},config)
+    setTableData(data.allData)
+    console.log(data);
   }
 
   useEffect(() => {
     if (!localStorage.getItem("id")) {
       navigate('/login')
+    }else{
+      fetchData()
     }
   }, [])
 
+  const config = {
+    headers: {
+      "Content-type": "application/json"
+    }
+  }
+
   const [open, setOpen] = useState(false);
+  const [childModal, setChildModal] = useState(false)
+  const [reason, setReason] = useState("")
 
   const handleClickOpen = () => {
+    setChildModal(false)
     setOpen(true);
   };
 
@@ -36,24 +53,58 @@ const Dashboard = () => {
     setOpen(false);
   };
 
+  const acceptHandle = ()=>{
+    setOpen(false)
+  }
+
+  const rejectHandler = ()=>{
+    setChildModal(false)
+    setOpen(false)
+  }
+
+  const rejectHandler2 = ()=>{
+    setOpen(true)
+    setChildModal(true)
+  }
+  
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: "80%",
+    height: "80%",
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflow: "scroll",
+    scrollbarWidth: "none"
+  };
+
+
   const columns = [
-    { title: "Booking Id", field: "booking_id", sorting: false,align:"center" },
-    { title: "Name", field: "name", sorting: false,align:"center" },
-    { title: "RollNo", field: "roll", sorting: false, align:"center" },
-    { title: "Phone", field: "number", sorting: false, align:"center" },
-    { title: "Amount", field: "amount", type: "currency", align: "center", currencySetting: { currencyCode: "INR", minimumFractionDigits: 0 }},
+    { title: "Booking Id", field: "bookingId", sorting: false, align: "center" },
+    { title: "Name", field: "indentorDetails.name", sorting: false, align: "center" },
+    { title: "RollNo", field: "indentorDetails.roll", sorting: false, align: "center" },
+    { title: "Phone", field: "indentorDetails.phone", sorting: false, align: "center" },
+    { title: "Amount", field: "totalCost", type: "currency", align: "center", currencySetting: { currencyCode: "INR", minimumFractionDigits: 0 } },
     {
-      title: "Details", field: "detail",align:"center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{padding:"0 5px", background:"#5bc0de"}} onClick={handleClickOpen}>Details</Button>
+      title: "Details", field: "detail", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5bc0de" }} onClick={handleClickOpen}>Details</Button>
       </IconButton>)
     },
-    { title: "Action", field: "action",align:"center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{padding:"0 5px", background:"#5cb85c"}}>Accept</Button>
-    </IconButton>
-    <IconButton>
-        <Button variant="contained" style={{padding:"0 5px", background:"#d9534f"}}>Reject</Button>
-    </IconButton>
-    </>
-    ) },
-    { title: "Status", field: "status", align:"center" },
+    {
+      title: "Action", field: "action", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={acceptHandle}>Accept</Button>
+      </IconButton>
+        <IconButton>
+          <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={rejectHandler2}>Reject</Button>
+        </IconButton>
+      </>
+      )
+    },
+    { title: "Status", field: "status", align: "center" },
   ]
 
   return (
@@ -67,34 +118,135 @@ const Dashboard = () => {
           <div><Button onClick={logout} >Logout</Button></div>
         </div>
         <div className='table'>
-          <MaterialTable columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{ search: true, searchFieldAlignment: 'right', searchAutoFocus: true, searchFieldVariant: "standard", pageSizeOptions: [5, 10, 20, 50, 100], paginationType: "stepped", exportButton: true, exportAllData: true, exportFileName: "GuestRoomBookingDetails_Hall3",
-          headerStyle:{ fontWeight:"bold", color:"black" },
-          rowStyle:(_,index)=> index%2===0?{background:"#d7d7d7",fontWeight:"bold"}:{fontWeight:"bold"} }}
-         />
+          <MaterialTable onRowClick={(_, rowData)=>setModalData(rowData)} columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{
+            search: true, searchFieldAlignment: 'right', searchAutoFocus: true, searchFieldVariant: "standard", pageSizeOptions: [5, 10, 20, 50, 100], paginationType: "stepped", exportButton: true, exportAllData: true, exportFileName: "GuestRoomBookingDetails_Hall3",
+            headerStyle: { fontWeight: "bold", color: "black" },
+            rowStyle: (_, index) => index % 2 === 0 ? { background: "#d7d7d7", fontWeight: "500" } : { fontWeight: "500" }
+          }}
+          />
         </div>
-        <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        style={{}}
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"ROOM DETAILS"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Room Number : 110   Room Type : DOUBLE BED
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} style={{background:"#5cb85c", color:"white"}}>ACCEPT</Button>
-          <Button onClick={handleClose} style={{background:"#d9534f", color:"white"}}>
-            REJECT
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {!childModal && <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="parent-modal-title"
+          aria-describedby="parent-modal-description"
+        >
+          <Box sx={{ ...style }}>
+            <h4 className='modal_heading'>Room Details</h4>
+            <div className='modal_content' >
+              <p>
+                Room Number : {modalData.roomDetails.roomNo}
+              </p>
+              <p>
+                Room Type : {modalData.roomDetails.roomType}
+              </p>
+              <p>
+                Arrival Date : {modalData.arrivalDate}
+              </p>
+              <p>
+                Departure Date : {modalData.departureDate}
+              </p>
+            </div>
+
+<hr style={{width:"90%"}}/>
+
+            <h4 className='modal_heading'>Visitor Details</h4>
+            {modalData.visitorDetails[0].name.length!==0 && <div className='modal_content' >
+              <p>
+                Name : {modalData.visitorDetails[0].name}
+              </p>
+              <p>
+                Mobile : {modalData.visitorDetails[0].phone}
+              </p>
+              <p>
+                Relationship : {modalData.visitorDetails[0].relationship}
+              </p>
+            </div>}
+            {modalData.visitorDetails[1].name.length!==0 && <div className='modal_content' >
+            <p>
+                Name : {modalData.visitorDetails[1].name}
+              </p>
+              <p>
+                Mobile : {modalData.visitorDetails[1].phone}
+              </p>
+              <p>
+                Relationship : {modalData.visitorDetails[1].relationship}
+              </p>
+            </div>}
+            {modalData.visitorDetails[2].name.length!==0  && <div className='modal_content' >
+            <p>
+                Name : {modalData.visitorDetails[2].name}
+              </p>
+              <p>
+                Mobile : {modalData.visitorDetails[2].phone}
+              </p>
+              <p>
+                Relationship : {modalData.visitorDetails[2].relationship}
+              </p>
+            </div>}
+            <div className='modal_content' >
+              Purpose of Visit: {modalData.purposeOfVisit}
+            </div>
+
+            <hr style={{width:"90%"}}/>
+
+            <h4 className='modal_heading'>Indentor Details</h4>
+            <div className='modal_content' >
+              <p>
+                Name : {modalData.indentorDetails.name}
+              </p>
+              <p>
+                Roll : {modalData.indentorDetails.roll}
+              </p>
+              <p>
+                Email : {modalData.indentorDetails.email}
+              </p>
+              <p>
+                Phone : {modalData.indentorDetails.phone}
+              </p>
+            </div>
+
+            <hr style={{width:"90%"}}/>
+
+            <div style={{margin:"10px auto",display:"flex", justifyContent:"center", alignItems:"center"}}><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c"}} onClick={acceptHandle}>Accept</Button>
+            </IconButton>
+              <IconButton>
+                <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={() => setChildModal(true)}>Reject</Button>
+              </IconButton>
+            </div>
+          </Box>
+        </Modal>}
+        {childModal && <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="parent-modal-title"
+          aria-describedby="parent-modal-description"
+        >
+          <Box sx={{ ...style, height:"auto" }}>
+            <h4 className='modal_heading'>Any Reason for Rejection?</h4>
+            <Box component="form"
+              sx={{
+                '& .MuiTextField-root': { margin: 2, width: '25ch' },
+              }}
+              noValidate
+              autoComplete="off">
+              <TextField id="outlined-read-only-input" style={{width:"100%"}} label="Type Here...." type='text' value={reason} onChange={(ev) => setReason(ev.target.value)}
+                InputProps={{
+                  readOnly: false,
+                }}
+              />
+            </Box>
+
+            <><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={rejectHandler}>Confirm reject</Button>
+            </IconButton>
+              <IconButton>
+                <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={() => setChildModal(false)}>Close</Button>
+              </IconButton>
+            </>
+          </Box>
+        </Modal>}
       </div>
+
     </div>
   )
 }

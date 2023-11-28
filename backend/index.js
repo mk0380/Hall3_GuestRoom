@@ -8,6 +8,8 @@ const userSchema = require('./models/userSchema')
 const { emailToIndentorForOTP } = require('./mailing/emailToIndentForOTP')
 const validEmail  = require('./important_data/validEmailLogin')
 const { sendForgetPasswordMail } = require('./mailing/sendForgetPasswordMail')
+const { emailToNotifyWarden } = require('./mailing/emailToNotifyWarden')
+const emailOwner = require('./important_data/emailOwner')
 
 // git add . git commit -m "" git push 
 
@@ -87,12 +89,13 @@ app.post('/details', async (req, res) => {
             },
             numberOfPersons: no_person_global,
             totalCost: "100",
+            bookingId: Math.floor(100000 + Math.random() * 900000),
             purposeOfVisit: purpose_global,
             arrivalDate: checkArrivalDate,
             departureDate: checkDepartureDate,
             roomDetails: {
                 roomNo: room_no_global,
-                roomType: room_type_global
+                roomType: room_type_global==="R2"?"Double Bed":"Triple Bed"
             },
             visitorDetails: [
                 {
@@ -127,7 +130,8 @@ app.post('/details', async (req, res) => {
 
                 res.json({
                     success: true,
-                    id:newData._id
+                    id:newData._id,
+                    message:"Please check your email, for OTP"
                 })
 
             } else {
@@ -162,6 +166,11 @@ app.post('/checkOTP', async(req,res)=>{
                 const time1 = new Date(moment(Date.now()).format("YYYY-MM-DDTHH:mm:ssZZ"))
                 const time2 = new Date(moment(checkData.OTP.expiryTime).format("YYYY-MM-DDTHH:mm:ssZZ"))
                 if(time2>=time1){
+
+                    console.log(emailOwner);
+
+                    emailToNotifyWarden(emailOwner[0].email)
+
                     res.json({
                         success: true,
                         message: "Your request is pending for warden approval. Once approved you will be notified via email."
@@ -223,7 +232,8 @@ app.post('/login',async (req,res)=>{
                     res.json({
                         success:true,
                         message:"Login successfully",
-                        id:ifSignUp._id
+                        id:ifSignUp._id,
+                        role:ifSignUp.role
                     })
                 }else{
                     res.json({
@@ -242,13 +252,24 @@ app.post('/login',async (req,res)=>{
                     })
                 }
 
-                const data = new userSchema({email,password})
+                var role = ""
+
+                if(email === emailOwner[0].email){
+                    role = "warden"
+                }
+
+                if(email === emailOwner[1].email){
+                    role = "hall_office"
+                }
+
+                const data = new userSchema({email,password,role})
                 const result =  await data.save()
 
                 res.json({
                     success:true,
                     message:"Login successfully",
-                    id:result._id
+                    id:result._id,
+                    role:result.role
                 })
 
             }
@@ -513,6 +534,32 @@ app.post('/setPasswordValidateOTP',async(req,res)=>{
             }) 
         }
 
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        })
+    }
+})
+
+app.post('/fetchData',async(req,res)=>{
+    try {
+
+        const allData = await bookingSchema.find({})
+
+        if(allData){
+            res.json({
+                success: true,
+                allData: allData
+            })
+        }else{
+            res.json({
+                success: false,
+                message: "Some error occured fetching data"
+            })
+        }
         
     } catch (error) {
         console.log(error.message);

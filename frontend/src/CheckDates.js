@@ -13,6 +13,9 @@ const CheckDates = () => {
 
   const [arrivalDate, setArrivalDate] = useState(null)
   const [departureDate, setDepartreDate] = useState(null)
+  const [room, setRoom] = useState("")
+
+  const [display, setDisplay] = useState(false)
 
   const setDates = (date) => {
     setArrivalDate(date);
@@ -43,12 +46,18 @@ const CheckDates = () => {
   }
 
   const checkStatus = async () => {
-    const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate }, config)
+    const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate}, config)
+    setDisplay(true)
     localStorage.setItem("arrivalDate", data.arrivalDate)
     localStorage.setItem("departureDate", data.departureDate)
   }
 
   const navigate = useNavigate()
+
+  const routing = ()=>{
+    localStorage.setItem("room",room)
+    navigate('/formFillup')
+  }
 
   const colorList = [["0", "0", "-1", "1", "1"],
   ["1", "0", "-1", "1", "0"],
@@ -79,7 +88,7 @@ const CheckDates = () => {
         </div>
 
         <div className="main">
-          <div className="colorCodes">
+          {display && <div className="colorCodes">
             <h5>Color Codes</h5>
             <div className='color_list'>
               <div className="box_color">
@@ -115,8 +124,8 @@ const CheckDates = () => {
               <p>R3  -</p>
               <p>-:Triple Bed</p>
             </div>
-          </div>
-          <div className="result">
+          </div>}
+          { display && <div className="result">
             <h5>Rooms Availability Status</h5>
 
             <div className="overall">
@@ -125,11 +134,11 @@ const CheckDates = () => {
 
                 <div className="date" style={{fontWeight:"bolder"}}>Select</div>
 
-                  <input type="radio" value="option1" name='option' />
-                  <input type="radio" value="option1" name='option' />
-                  <input type="radio" value="option1" name='option' />
-                  <input type="radio" value="option1" name='option' />    
-                  <input type="radio" value="option1" name='option' />
+                  <input type="radio" value="109 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
+                  <input type="radio" value="110 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
+                  <input type="radio" value="111 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
+                  <input type="radio" value="112 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>    
+                  <input type="radio" value="113 R3" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
 
               </div>
 
@@ -137,23 +146,23 @@ const CheckDates = () => {
                 <div className="date" style={{fontWeight:"bolder"}}>RoomNo</div>
 
                 <label>
-                  109 R3
+                  109 R2
                 </label>
 
                 <label>
-                  109 R3
+                  110 R2
                 </label>
 
                 <label>
-                  109 R3
+                  111 R2
                 </label>
 
                 <label>
-                  109 R3
+                  112 R2
                 </label>
 
                 <label>
-                  109 R3
+                  113 R3
                 </label>
 
               </div>
@@ -170,11 +179,11 @@ const CheckDates = () => {
               </div>)}
 
             </div>
-          </div>
+          </div>}
         </div>
-        <div className='book_btn'>
-          <Button variant="outlined" onClick={() => navigate('/formFillup')}>Book selected rooms</Button>
-        </div>
+        { display && <div className='book_btn'>
+          <Button variant="outlined" disabled={room.length===0} onClick={routing}>Book selected rooms</Button>
+        </div>}
       </div>
     </div>
   )

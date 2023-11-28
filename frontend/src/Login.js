@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import axios from 'axios'
 import BACKEND_URL from './important_data/backendUrl';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -39,7 +40,11 @@ const Login = () => {
 
         if(data.success){
             localStorage.setItem("id",data.id)
+            localStorage.setItem("role",data.role)
             naviagte('/dashboard')
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
 
     }

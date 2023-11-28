@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import axios from 'axios';
 import BACKEND_URL from './important_data/backendUrl';
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -32,6 +33,9 @@ const Login = () => {
         const { data } = await axios.post(BACKEND_URL + "/forgetPasword", { email }, config)
         if (data.success) {
             setDisabled(false)
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
     }
 
@@ -39,6 +43,9 @@ const Login = () => {
         const { data } = await axios.post(BACKEND_URL + "/validateOTP", { otp, email }, config)
         if (data.success) {
             setOtpcheck(false)
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
 
     }
@@ -47,6 +54,9 @@ const Login = () => {
         const { data } = await axios.post(BACKEND_URL + "/passwordChange", { newPassword, email }, config)
         if (data.success) {
             navigate('/login')
+            toast.success(data.message)
+        }else{
+            toast.error(data.message)
         }
 
     }

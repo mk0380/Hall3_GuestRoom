@@ -352,6 +352,19 @@ input[type=number]::-webkit-outer-spin-button {
   display: none;  /* Safari and Chrome */
 }
 
+.modal_heading{
+  color: rgb(247, 70, 70);
+  margin: 20px;
+}
+
+.modal_content{
+  display: flex;
+  justify-content: space-evenly;
+  color: rgb(90, 90, 74);
+  font-weight: 500;
+  margin: 20px;
+}
+
 
 
 
