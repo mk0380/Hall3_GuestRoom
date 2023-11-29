@@ -10,6 +10,8 @@ const validEmail  = require('./important_data/validEmailLogin')
 const { sendForgetPasswordMail } = require('./mailing/sendForgetPasswordMail')
 const { emailToNotifyWarden } = require('./mailing/emailToNotifyWarden')
 const emailOwner = require('./important_data/emailOwner')
+const roomRates = require('./important_data/roomRates')
+const { rejectionEmail } = require('./mailing/rejectionEmail')
 
 // git add . git commit -m "" git push 
 
@@ -83,12 +85,18 @@ app.post('/details', async (req, res) => {
 
         const { name, phone, roll, email, no_person_global, name1_global, name2_global, name3_global, mobile1_global, mobile2_global, mobile3_global, purpose_global, relationship1_global, relationship2_global, relationship3_global, room_type_global, room_no_global, checkArrivalDate, checkDepartureDate } = req.body
 
+        const roomPrice  = roomRates.filter((room)=>room.roomNo === room_no_global)
+
+        const date1 = moment(checkArrivalDate, 'DD/MM/YYYY').toISOString();
+        const date2 = moment(checkDepartureDate, 'DD/MM/YYYY').toISOString();
+        const numOfDaysStay = moment(date2).diff(moment(date1), 'days')+1;
+
         var data = new bookingSchema({
             indentorDetails: {
                 name, roll, email, phone
             },
             numberOfPersons: no_person_global,
-            totalCost: "100",
+            totalCost: roomPrice[0].roomPrice*numOfDaysStay,
             bookingId: Math.floor(100000 + Math.random() * 900000),
             purposeOfVisit: purpose_global,
             arrivalDate: checkArrivalDate,
@@ -113,6 +121,7 @@ app.post('/details', async (req, res) => {
                 }
             ]
         })
+
         const result = await data.save()
 
         if (result) {
@@ -126,7 +135,7 @@ app.post('/details', async (req, res) => {
 
             if (newData) {
 
-                emailToIndentorForOTP(name, otp, email)
+                emailToIndentorForOTP(name, otp, email, bookingId)
 
                 res.json({
                     success: true,
@@ -167,7 +176,8 @@ app.post('/checkOTP', async(req,res)=>{
                 const time2 = new Date(moment(checkData.OTP.expiryTime).format("YYYY-MM-DDTHH:mm:ssZZ"))
                 if(time2>=time1){
 
-                    console.log(emailOwner);
+                    checkData.approvalLevel = "1"
+                    await checkData.save()
 
                     emailToNotifyWarden(emailOwner[0].email)
 
@@ -567,6 +577,67 @@ app.post('/fetchData',async(req,res)=>{
             success: false,
             message: "Some error occured"
         })
+    }
+})
+
+app.post('/wardenApproval', async(req,res)=>{
+    try {
+
+        const { booking_id } = req.body;
+
+        const bookingData = await bookingSchema.findOneAndUpdate({bookingId:booking_id},{approvalLevel:"2"})
+
+        if(bookingData){
+            res.json({
+                success:true,
+                message:"Request approved by Warden"
+            })
+        }else{
+            res.json({
+                success:false,
+                meessage:"Some error occured"
+            })
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
+    }
+})
+
+app.post('/wardenRejection', async(req,res)=>{
+    try {
+
+        const { booking_id, reason } = req.body;
+
+        const bookingData = await bookingSchema.findOneAndUpdate({bookingId:booking_id},{approvalLevel:"-1", rejectionReason:reason})
+
+        if(bookingData){
+
+            rejectionEmail(bookingData.indentorDetails.email, reason, bookingData.indentorDetails.name, bookingData.bookingId)
+
+            res.json({
+                success:true,
+                message:"Request rejected by Warden"
+            })
+        }else{
+            res.json({
+                success:false,
+                meessage:"Some error occured"
+            })
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
     }
 })
 

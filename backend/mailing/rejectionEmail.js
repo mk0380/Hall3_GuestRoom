@@ -3,7 +3,7 @@ var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
 
-const emailToIndentorForOTP = (name,otp,email,id) => {
+const rejectionEmail = (email, reason, name, id) => {
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -28,25 +28,24 @@ const emailToIndentorForOTP = (name,otp,email,id) => {
   var mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Guest Room Booking OTP for Hall 3',
-    template: 'emailToIndentForOTP',
+    subject: `Rejection of Guest Room Booking [Booking ID:${id}]`,
+    template: 'rejectionEmail',
     context: {
-      title: 'Guest Room Booking OTP for Hall 3',
-      name: name,
-      otp: otp,
+      title: `Rejection of Guest Room Booking [Booking ID:${id}]`,
+      reason: reason,
+      name:name,
       id:id
     }
 
   };
 
-
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error.message);
     } else {
-      console.log("OTP mail sent successfully");
+      console.log("Rejection Mail sent successfully");
     }
   });
 }
 
-module.exports = { emailToIndentorForOTP }
+module.exports = { rejectionEmail }

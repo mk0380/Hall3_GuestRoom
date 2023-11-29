@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const [tableData, setTableData] = useState([])
-  const [modalData, setModalData] = useState({roomDetails:{roomNo:"",roomType:""}, arrivalDate:"",departureDate:"",visitorDetails:[{name:"",relationship:"",phone:""},{name:"",relationship:"",phone:""},{name:"",relationship:"",phone:""}],indentorDetails:{name:"",roll:"",email:"",phone:""}, purposeOfVisit:"" })
+  const [modalData, setModalData] = useState({ roomDetails: { roomNo: "", roomType: "" }, arrivalDate: "", departureDate: "", visitorDetails: [{ name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }], indentorDetails: { name: "", roll: "", email: "", phone: "" }, purposeOfVisit: "", bookingId:"" })
 
   const logout = () => {
     localStorage.removeItem("id")
@@ -20,16 +20,22 @@ const Dashboard = () => {
     toast.success("Logout successfully")
   }
 
-  const fetchData = async()=>{
-    const { data }  = await axios.post(BACKEND_URL+'/fetchData',{},config)
-    setTableData(data.allData)
-    console.log(data);
+  const fetchData = async () => {
+    const { data } = await axios.post(BACKEND_URL + '/fetchData', {}, config)
+
+    var filteredData = []
+
+    if(localStorage.getItem("role")==="warden"){
+       filteredData = data.allData.filter((item)=> item.approvalLevel === "1")
+    }
+
+    setTableData(filteredData)
   }
 
   useEffect(() => {
     if (!localStorage.getItem("id")) {
       navigate('/login')
-    }else{
+    } else {
       fetchData()
     }
   }, [])
@@ -53,20 +59,41 @@ const Dashboard = () => {
     setOpen(false);
   };
 
-  const acceptHandle = ()=>{
+  const acceptHandle =async () => {
+
+    const booking_id = modalData.bookingId;
     setOpen(false)
+
+    const { data } = await axios.post(BACKEND_URL+'/wardenApproval',{booking_id},config)
+
+    if(data.success){
+      toast.success(data.message)
+    }else{
+      toast.error(data.success)
+    }
+
   }
 
-  const rejectHandler = ()=>{
+  const rejectHandler =async () => {
     setChildModal(false)
     setOpen(false)
+
+    const booking_id = modalData.bookingId;
+    const { data } = await axios.post(BACKEND_URL+'/wardenRejection',{booking_id, reason},config)
+
+    if(data.success){
+      toast.success(data.message)
+    }else{
+      toast.error(data.success)
+    }
+
   }
 
-  const rejectHandler2 = ()=>{
+  const rejectHandler2 =async () => {
     setOpen(true)
     setChildModal(true)
   }
-  
+
 
   const style = {
     position: 'absolute',
@@ -118,7 +145,7 @@ const Dashboard = () => {
           <div><Button onClick={logout} >Logout</Button></div>
         </div>
         <div className='table'>
-          <MaterialTable onRowClick={(_, rowData)=>setModalData(rowData)} columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{
+          <MaterialTable onRowClick={(_, rowData) => setModalData(rowData)} columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{
             search: true, searchFieldAlignment: 'right', searchAutoFocus: true, searchFieldVariant: "standard", pageSizeOptions: [5, 10, 20, 50, 100], paginationType: "stepped", exportButton: true, exportAllData: true, exportFileName: "GuestRoomBookingDetails_Hall3",
             headerStyle: { fontWeight: "bold", color: "black" },
             rowStyle: (_, index) => index % 2 === 0 ? { background: "#d7d7d7", fontWeight: "500" } : { fontWeight: "500" }
@@ -148,10 +175,10 @@ const Dashboard = () => {
               </p>
             </div>
 
-<hr style={{width:"90%"}}/>
+            <hr style={{ width: "90%" }} />
 
             <h4 className='modal_heading'>Visitor Details</h4>
-            {modalData.visitorDetails[0].name.length!==0 && <div className='modal_content' >
+            {modalData.visitorDetails[0].name.length !== 0 && <div className='modal_content' >
               <p>
                 Name : {modalData.visitorDetails[0].name}
               </p>
@@ -162,8 +189,8 @@ const Dashboard = () => {
                 Relationship : {modalData.visitorDetails[0].relationship}
               </p>
             </div>}
-            {modalData.visitorDetails[1].name.length!==0 && <div className='modal_content' >
-            <p>
+            {modalData.visitorDetails[1].name.length !== 0 && <div className='modal_content' >
+              <p>
                 Name : {modalData.visitorDetails[1].name}
               </p>
               <p>
@@ -173,8 +200,8 @@ const Dashboard = () => {
                 Relationship : {modalData.visitorDetails[1].relationship}
               </p>
             </div>}
-            {modalData.visitorDetails[2].name.length!==0  && <div className='modal_content' >
-            <p>
+            {modalData.visitorDetails[2].name.length !== 0 && <div className='modal_content' >
+              <p>
                 Name : {modalData.visitorDetails[2].name}
               </p>
               <p>
@@ -188,7 +215,7 @@ const Dashboard = () => {
               Purpose of Visit: {modalData.purposeOfVisit}
             </div>
 
-            <hr style={{width:"90%"}}/>
+            <hr style={{ width: "90%" }} />
 
             <h4 className='modal_heading'>Indentor Details</h4>
             <div className='modal_content' >
@@ -206,9 +233,9 @@ const Dashboard = () => {
               </p>
             </div>
 
-            <hr style={{width:"90%"}}/>
+            <hr style={{ width: "90%" }} />
 
-            <div style={{margin:"10px auto",display:"flex", justifyContent:"center", alignItems:"center"}}><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c"}} onClick={acceptHandle}>Accept</Button>
+            <div style={{ margin: "10px auto", display: "flex", justifyContent: "center", alignItems: "center" }}><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={acceptHandle}>Accept</Button>
             </IconButton>
               <IconButton>
                 <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={() => setChildModal(true)}>Reject</Button>
@@ -222,7 +249,7 @@ const Dashboard = () => {
           aria-labelledby="parent-modal-title"
           aria-describedby="parent-modal-description"
         >
-          <Box sx={{ ...style, height:"auto" }}>
+          <Box sx={{ ...style, height: "auto" }}>
             <h4 className='modal_heading'>Any Reason for Rejection?</h4>
             <Box component="form"
               sx={{
@@ -230,7 +257,7 @@ const Dashboard = () => {
               }}
               noValidate
               autoComplete="off">
-              <TextField id="outlined-read-only-input" style={{width:"100%"}} label="Type Here...." type='text' value={reason} onChange={(ev) => setReason(ev.target.value)}
+              <TextField id="outlined-read-only-input" style={{ width: "100%" }} label="Type Here...." type='text' value={reason} onChange={(ev) => setReason(ev.target.value)}
                 InputProps={{
                   readOnly: false,
                 }}
