@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const [tableData, setTableData] = useState([])
-  const [modalData, setModalData] = useState({ roomDetails: { roomNo: "", roomType: "" }, arrivalDate: "", departureDate: "", visitorDetails: [{ name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }], indentorDetails: { name: "", roll: "", email: "", phone: "" }, purposeOfVisit: "", bookingId:"" })
+  const [modalData, setModalData] = useState({ roomDetails: { roomNo: "", roomType: "" }, arrivalDate: "", departureDate: "", visitorDetails: [{ name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }, { name: "", relationship: "", phone: "" }], indentorDetails: { name: "", roll: "", email: "", phone: "" }, purposeOfVisit: "", bookingId:"", status:"", approvalLevel:"" })
 
   const logout = () => {
     localStorage.removeItem("id")
@@ -30,7 +30,7 @@ const Dashboard = () => {
     }
 
     if(localStorage.getItem("role")==="hall_office"){
-      filteredData = data.allData
+      filteredData = data.allData.filter((item)=> item.approvalLevel === "2" || item.approvalLevel === "3" || item.approvalLevel === "4" || item.approvalLevel === "-1")
    }
 
     setTableData(filteredData)
@@ -67,16 +67,30 @@ const Dashboard = () => {
 
   const acceptHandle =async () => {
 
-    setOpen(!open)
-
     const booking_id = modalData.bookingId;
-
-    console.log(booking_id);
 
     const { data } = await axios.post(BACKEND_URL+'/wardenApproval',{booking_id},config)
 
     if(data.success){
       toast.success(data.message)
+      setOpen(!open)
+
+    }else{
+      toast.error(data.success)
+    }
+
+  }
+
+  const hallApproval = async ()=>{
+
+    const booking_id = modalData.bookingId;
+
+    const { data } = await axios.post(BACKEND_URL+'/hallApproval',{booking_id},config)
+
+    if(data.success){
+      toast.success(data.message)
+      setOpen(!open)
+
     }else{
       toast.error(data.success)
     }
@@ -126,21 +140,21 @@ const Dashboard = () => {
     { title: "Name", field: "indentorDetails.name", sorting: false, align: "center" },
     { title: "RollNo", field: "indentorDetails.roll", sorting: false, align: "center" },
     { title: "Phone", field: "indentorDetails.phone", sorting: false, align: "center" },
-    { title: "Amount", field: "totalCost", type: "currency", align: "center", currencySetting: { currencyCode: "INR", minimumFractionDigits: 0 } },
+    { title: "Amount", field: "totalCost", align: "center"},
     {
-      title: "Details", field: "detail", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5bc0de" }} onClick={handleClickOpen}>Details</Button>
+      title: "Details", field: "detail", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid") }} onClick={handleClickOpen}disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>Details</Button>
       </IconButton>)
     },
     {
-      title: "Action", field: "action", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={acceptHandle}>Accept</Button>
+      title: "Action", field: "action", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#5cb85c"}} onClick={()=>setOpen(!open)} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>{rowData.approvalLevel === "2"?"Payment 1":rowData.approvalLevel === "3"?"Payment 2":"Accept"}</Button>
       </IconButton>
         <IconButton>
-          <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={rejectHandler2}>Reject</Button>
+          <Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#d9534f" }} onClick={rejectHandler2} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>Reject</Button>
         </IconButton>
       </>
       )
     },
-    { title: "Status", field: "status", align: "center" },
+    { title: "Status", field: "status", align: "center"},
   ]
 
   return (
@@ -246,7 +260,7 @@ const Dashboard = () => {
 
             <hr style={{ width: "90%" }} />
 
-            <div style={{ margin: "10px auto", display: "flex", justifyContent: "center", alignItems: "center" }}><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={acceptHandle}>Accept</Button>
+            <div style={{ margin: "10px auto", display: "flex", justifyContent: "center", alignItems: "center" }}><IconButton><Button variant="contained" style={{ padding: "0 5px", background: "#5cb85c" }} onClick={modalData.approvalLevel === "1"?acceptHandle:hallApproval}>{modalData.approvalLevel === "2"?"Payment 1":modalData.approvalLevel === "3"?"Payment 2":"Accept"}</Button>
             </IconButton>
               <IconButton>
                 <Button variant="contained" style={{ padding: "0 5px", background: "#d9534f" }} onClick={() => setChildModal(true)}>Reject</Button>

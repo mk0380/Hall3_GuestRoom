@@ -15,6 +15,9 @@ const gusetRoomSchema  = mongoose.Schema({
     rejectionReason:{
         type:String
     },
+    status:{
+        type:String
+    },
     OTP:{
         value:{
             type:String,

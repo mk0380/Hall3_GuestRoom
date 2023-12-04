@@ -556,9 +556,11 @@ app.post('/fetchData',async(req,res)=>{
 
         var allData = await bookingSchema.find({})
 
-        console.log(allData);
-
-        // allData = allData.map((each)=> each.totalCost = parseInt(Math.ceil(each.totalCost*0.1))+"/"+(each.totalCost-parseInt(Math.ceil(each.totalCost*0.1))))
+        for (let index = 0; index < allData.length; index++) {
+             allData[index].totalCost = "₹"+parseInt(Math.ceil(allData[index].totalCost*0.1))+" + "+"₹"+parseInt(allData[index].totalCost-parseInt(Math.ceil(allData[index].totalCost*0.1)))
+             
+             allData[index].status = allData[index].approvalLevel === "-1"?"Rejected": allData[index].approvalLevel === "2"?"":allData[index].approvalLevel === "3"?"Payment 1 Done":allData[index].approvalLevel === "4"?"Paid":""
+        }
 
         console.log(allData);
 
@@ -596,7 +598,7 @@ app.post('/wardenApproval', async(req,res)=>{
 
             res.json({
                 success:true,
-                message:"Request approved by Warden"
+                message:"Request approved"
             })
         }else{
             res.json({
@@ -628,7 +630,7 @@ app.post('/wardenRejection', async(req,res)=>{
 
             res.json({
                 success:true,
-                message:"Request rejected by Warden"
+                message:"Request rejected"
             })
         }else{
             res.json({
@@ -646,6 +648,49 @@ app.post('/wardenRejection', async(req,res)=>{
         }) 
     }
 })
+
+app.post('/hallApproval', async(req,res)=>{
+    try {
+
+        const { booking_id } = req.body;
+
+        const extractData = await bookingSchema.findOne({bookingId:booking_id})
+
+        console.log(extractData);
+        console.log("BKJBMJNKJ");
+
+        var bookingData = null
+
+        if(extractData.approvalLevel === "2"){
+            console.log(extractData.approvalLevel);
+            bookingData = await bookingSchema.findOneAndUpdate({bookingId:booking_id},{approvalLevel:"3"})
+        }else{
+            console.log(extractData.approvalLevel);
+            bookingData = await bookingSchema.findOneAndUpdate({bookingId:booking_id},{approvalLevel:"4",paid:true})
+        }
+
+        if(bookingData){
+            res.json({
+                success:true,
+                message:"Payment Updated"
+            })
+        }else{
+            res.json({
+                success:false,
+                message:"Some error occured"
+            })
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: "Some error occured"
+        }) 
+    }
+})
+
 
 
 
