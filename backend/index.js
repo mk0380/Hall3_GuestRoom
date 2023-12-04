@@ -12,6 +12,7 @@ const { emailToNotifyWarden } = require('./mailing/emailToNotifyWarden')
 const emailOwner = require('./important_data/emailOwner')
 const roomRates = require('./important_data/roomRates')
 const { rejectionEmail } = require('./mailing/rejectionEmail')
+const { approvalEmail } = require('./mailing/approvalEmail')
 
 // git add . git commit -m "" git push 
 
@@ -305,13 +306,9 @@ app.post('/forgetPasword',async (req,res)=>{
 
         const {email} = req.body;
 
-        // console.log(req.body);
-
         if(checkValidEmailLogin(email)){
 
             const result = await userSchema.findOne({email:email})
-
-            // console.log(result);
 
             if(result){
         
@@ -557,7 +554,13 @@ app.post('/setPasswordValidateOTP',async(req,res)=>{
 app.post('/fetchData',async(req,res)=>{
     try {
 
-        const allData = await bookingSchema.find({})
+        var allData = await bookingSchema.find({})
+
+        console.log(allData);
+
+        // allData = allData.map((each)=> each.totalCost = parseInt(Math.ceil(each.totalCost*0.1))+"/"+(each.totalCost-parseInt(Math.ceil(each.totalCost*0.1))))
+
+        console.log(allData);
 
         if(allData){
             res.json({
@@ -588,6 +591,9 @@ app.post('/wardenApproval', async(req,res)=>{
         const bookingData = await bookingSchema.findOneAndUpdate({bookingId:booking_id},{approvalLevel:"2"})
 
         if(bookingData){
+
+            approvalEmail(bookingData.indentorDetails.email, parseInt(Math.ceil(bookingData.totalCost*0.1)), bookingData.indentorDetails.name, bookingData.bookingId)
+
             res.json({
                 success:true,
                 message:"Request approved by Warden"
@@ -595,7 +601,7 @@ app.post('/wardenApproval', async(req,res)=>{
         }else{
             res.json({
                 success:false,
-                meessage:"Some error occured"
+                message:"Some error occured"
             })
         }
 

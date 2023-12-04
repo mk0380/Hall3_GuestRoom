@@ -29,8 +29,17 @@ const Dashboard = () => {
        filteredData = data.allData.filter((item)=> item.approvalLevel === "1")
     }
 
+    if(localStorage.getItem("role")==="hall_office"){
+      filteredData = data.allData
+   }
+
     setTableData(filteredData)
   }
+
+  
+  const [open, setOpen] = useState(false);
+  const [childModal, setChildModal] = useState(false)
+  const [reason, setReason] = useState("")
 
   useEffect(() => {
     if (!localStorage.getItem("id")) {
@@ -38,7 +47,7 @@ const Dashboard = () => {
     } else {
       fetchData()
     }
-  }, [])
+  }, [open])
 
   const config = {
     headers: {
@@ -46,9 +55,6 @@ const Dashboard = () => {
     }
   }
 
-  const [open, setOpen] = useState(false);
-  const [childModal, setChildModal] = useState(false)
-  const [reason, setReason] = useState("")
 
   const handleClickOpen = () => {
     setChildModal(false)
@@ -61,8 +67,11 @@ const Dashboard = () => {
 
   const acceptHandle =async () => {
 
+    setOpen(!open)
+
     const booking_id = modalData.bookingId;
-    setOpen(false)
+
+    console.log(booking_id);
 
     const { data } = await axios.post(BACKEND_URL+'/wardenApproval',{booking_id},config)
 
@@ -145,7 +154,9 @@ const Dashboard = () => {
           <div><Button onClick={logout} >Logout</Button></div>
         </div>
         <div className='table'>
-          <MaterialTable onRowClick={(_, rowData) => setModalData(rowData)} columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{
+          <MaterialTable onRowClick={ (_, rowData)=> 
+          setModalData(prevData=> ({...prevData, ...rowData})) 
+        } columns={columns} data={tableData} title={"Guest Room Booking Details"} options={{
             search: true, searchFieldAlignment: 'right', searchAutoFocus: true, searchFieldVariant: "standard", pageSizeOptions: [5, 10, 20, 50, 100], paginationType: "stepped", exportButton: true, exportAllData: true, exportFileName: "GuestRoomBookingDetails_Hall3",
             headerStyle: { fontWeight: "bold", color: "black" },
             rowStyle: (_, index) => index % 2 === 0 ? { background: "#d7d7d7", fontWeight: "500" } : { fontWeight: "500" }

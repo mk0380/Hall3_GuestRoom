@@ -3,7 +3,7 @@ var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
 
-const rejectionEmail = (email, reason, name, id) => {
+const approvalEmail = (email, amount, name, id) => {
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -28,11 +28,11 @@ const rejectionEmail = (email, reason, name, id) => {
   var mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: `Rejection of Guest Room Booking Request[Booking ID:${id}]`,
-    template: 'rejectionEmail',
+    subject: `Approval of Guest Room Booking Request[Booking ID:${id}]`,
+    template: 'approvalEmail',
     context: {
-      title: `Rejection of Guest Room Booking Request[Booking ID:${id}]`,
-      reason: reason,
+      title: `Approval of Guest Room Booking Request[Booking ID:${id}]`,
+      amount: amount,
       name:name,
       id:id
     }
@@ -43,9 +43,9 @@ const rejectionEmail = (email, reason, name, id) => {
     if (error) {
       console.log(error.message);
     } else {
-      console.log("Rejection Mail sent successfully");
+      console.log("Acception Mail sent successfully");
     }
   });
 }
 
-module.exports = { rejectionEmail }
+module.exports = { approvalEmail }
