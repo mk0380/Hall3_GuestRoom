@@ -11,8 +11,20 @@ import dayjs from 'dayjs';
 
 const CheckDates = () => {
 
+  const color = [["0", "0", "-1", "1", "1"],
+  // R1 R2  ... of a particular date   -1 = Red = booked, 0  = yellow = reserved, 1 = green = available
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"],
+  ["1", "0", "-1", "1", "0"]]
+
+
   const [arrivalDate, setArrivalDate] = useState(null)
   const [departureDate, setDepartreDate] = useState(null)
+  const [colorList, setColorList] = useState(color)
+  const [datesColor, setDatesColors] = useState(["", "", "", "", "", "", ""])
   const [room, setRoom] = useState("")
 
   const [display, setDisplay] = useState(false)
@@ -46,7 +58,10 @@ const CheckDates = () => {
   }
 
   const checkStatus = async () => {
-    const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate}, config)
+    const { data } = await axios.post(BACKEND_URL + '/checkDates', { arrivalDate, departureDate }, config)
+
+    setColorList(data.color)
+    setDatesColors(data.dates)
     setDisplay(true)
     localStorage.setItem("arrivalDate", data.arrivalDate)
     localStorage.setItem("departureDate", data.departureDate)
@@ -54,21 +69,13 @@ const CheckDates = () => {
 
   const navigate = useNavigate()
 
-  const routing = ()=>{
-    localStorage.setItem("room",room)
+  const routing = () => {
+    localStorage.setItem("room", room)
     navigate('/formFillup')
   }
 
-  const colorList = [["0", "0", "-1", "1", "1"],
-  ["1", "0", "-1", "1", "0"],
-  ["1", "0", "-1", "1", "0"],
-  ["1", "0", "-1", "1", "0"],
-  ["1", "0", "-1", "1", "0"],
-  ["1", "0", "-1", "1", "0"],
-  ["1", "0", "-1", "1", "0"]]
-
   return (
-    <div className='home'>
+    <div className='home checkDatesSection'>
       <div className="container">
         <h2>Guest Room Booking Portal</h2>
         <h3>HALL OF RESIDENCE III</h3>
@@ -84,105 +91,87 @@ const CheckDates = () => {
               {arrivalDate && <DatePicker minDate={arrivalDate} maxDate={dayjs(arrivalDate).add(6, 'day')} format='DD/MM/YYYY' label="To :" onChange={(date) => setDepartreDate(date)} />}
             </DemoContainer>
           </LocalizationProvider>
-          <Button variant="outlined" disabled={checkDateSpan()} onClick={checkStatus}>Check Availability</Button>
+          <Button variant="outlined" disabled={checkDateSpan()} className='btn' onClick={checkStatus}>Check Availability</Button>
         </div>
 
-        <div className="main">
           {display && <div className="colorCodes">
             <h5>Color Codes</h5>
             <div className='color_list'>
               <div className="box_color">
-                <div className="green">
-
-                </div>
-
-                Vacant
-
+                <div className="green"></div>Vacant
               </div>
               <div className="box_color">
-
-                <div className="red"></div>
-
-                Booked
-
+                <div className="red"></div>Booked
               </div>
               <div className="box_color">
-
-                <div className="yellow"></div>
-
-                Reserved
-
+                <div className="yellow"></div>Reserved
               </div>
             </div>
 
             <h5>Rooms Size</h5>
             <div className="room_size">
-              <p>R2  -</p>
-              <p>-:Double Bed</p>
-            </div>
-            <div className="room_size">
-              <p>R3  -</p>
-              <p>-:Triple Bed</p>
+              <p>R2  -  Double Bed</p>
+              <p>R3  -  Triple Bed</p>
             </div>
           </div>}
-          { display && <div className="result">
-            <h5>Rooms Availability Status</h5>
 
-            <div className="overall">
+        {display && <div className="result">
+          <h5>Rooms Availability Status</h5>
 
-              <div className="columns">
+          <div className="overall">
 
-                <div className="date" style={{fontWeight:"bolder"}}>Select</div>
+            <div className="columns">
 
-                  <input type="radio" value="109 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
-                  <input type="radio" value="110 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
-                  <input type="radio" value="111 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
-                  <input type="radio" value="112 R2" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>    
-                  <input type="radio" value="113 R3" name='option' onClick={(ev)=>setRoom(ev.target.value)}/>
+              <div className="date" style={{ fontWeight: "bolder" }}>Select</div>
 
-              </div>
-
-              <div className="columns">
-                <div className="date" style={{fontWeight:"bolder"}}>RoomNo</div>
-
-                <label>
-                  109 R2
-                </label>
-
-                <label>
-                  110 R2
-                </label>
-
-                <label>
-                  111 R2
-                </label>
-
-                <label>
-                  112 R2
-                </label>
-
-                <label>
-                  113 R3
-                </label>
-
-              </div>
-
-
-              {[...Array(7)].map((e, i) => <div className="columns">
-
-                <div className="date" style={{fontWeight:"bolder"}}>1{i + 1}/11/23</div>
-                <div className={"" + ((colorList[i][0] === "1" ? "green1 room" : colorList[i][0] === "-1" ? "red1 room" : colorList[i][0] === "0" ? "yellow1 room" : "black1 room"))}></div>
-                <div className={"" + ((colorList[i][1] === "1" ? "green1 room" : colorList[i][1] === "-1" ? "red1 room" : colorList[i][1] === "0" ? "yellow1 room" : "black1 room"))}></div>
-                <div className={"" + ((colorList[i][2] === "1" ? "green1 room" : colorList[i][2] === "-1" ? "red1 room" : colorList[i][2] === "0" ? "yellow1 room" : "black1 room"))}></div>
-                <div className={"" + ((colorList[i][3] === "1" ? "green1 room" : colorList[i][3] === "-1" ? "red1 room" : colorList[i][3] === "0" ? "yellow1 room" : "black1 room"))}></div>
-                <div className={"" + ((colorList[i][4] === "1" ? "green1 room" : colorList[i][4] === "-1" ? "red1 room" : colorList[i][4] === "0" ? "yellow1 room" : "black1 room"))}></div>
-              </div>)}
+              <input type="radio" value="109 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="110 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="111 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="112 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="113 R3" name='option' onClick={(ev) => setRoom(ev.target.value)} />
 
             </div>
-          </div>}
-        </div>
-        { display && <div className='book_btn'>
-          <Button variant="outlined" disabled={room.length===0} onClick={routing}>Book selected rooms</Button>
+
+            <div className="columns">
+              <div className="date" style={{ fontWeight: "bolder" }}>RoomNo</div>
+
+              <label>
+                109 R2
+              </label>
+
+              <label>
+                110 R2
+              </label>
+
+              <label>
+                111 R2
+              </label>
+
+              <label>
+                112 R2
+              </label>
+
+              <label>
+                113 R3
+              </label>
+
+            </div>
+
+
+            {[...Array(7)].map((_, i) => <div className="columns">
+
+              <div className="date" style={{ fontWeight: "bolder" }}>{datesColor[i]}</div>
+              <div className={"" + ((colorList[i][0] === "1" ? "green1 room" : colorList[i][0] === "-1" ? "red1 room" : colorList[i][0] === "0" ? "yellow1 room" : "black1 room"))}></div>
+              <div className={"" + ((colorList[i][1] === "1" ? "green1 room" : colorList[i][1] === "-1" ? "red1 room" : colorList[i][1] === "0" ? "yellow1 room" : "black1 room"))}></div>
+              <div className={"" + ((colorList[i][2] === "1" ? "green1 room" : colorList[i][2] === "-1" ? "red1 room" : colorList[i][2] === "0" ? "yellow1 room" : "black1 room"))}></div>
+              <div className={"" + ((colorList[i][3] === "1" ? "green1 room" : colorList[i][3] === "-1" ? "red1 room" : colorList[i][3] === "0" ? "yellow1 room" : "black1 room"))}></div>
+              <div className={"" + ((colorList[i][4] === "1" ? "green1 room" : colorList[i][4] === "-1" ? "red1 room" : colorList[i][4] === "0" ? "yellow1 room" : "black1 room"))}></div>
+            </div>)}
+
+          </div>
+        </div>}
+        {display && <div className='book_btn'>
+          <Button variant="outlined" disabled={room.length === 0} onClick={routing}>Book selected rooms</Button>
         </div>}
       </div>
     </div>
