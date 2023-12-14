@@ -18,7 +18,6 @@ const App = () => {
   return (
       <Routes>
         <Route path='/formFillup' element={<Tabs />} />
-
         <Route path='/checkDates' element={<CheckDates />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/changePassword' element={<ChangePassword />} />

@@ -74,6 +74,17 @@ const CheckDates = () => {
     navigate('/formFillup')
   }
 
+  const checkCanBeSelected = (index)=>{
+    console.log(datesColor);
+    console.log(colorList);
+    for (let row = 0; row < datesColor.length; row++) {
+            if(colorList[row][index]=="0" || colorList[row][index]=="-1"){
+              return true
+            }
+    }
+    return false
+  }
+
   return (
     <div className='home checkDatesSection'>
       <div className="container">
@@ -124,11 +135,11 @@ const CheckDates = () => {
 
               <div className="date" style={{ fontWeight: "bolder" }}>Select</div>
 
-              <input type="radio" value="109 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
-              <input type="radio" value="110 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
-              <input type="radio" value="111 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
-              <input type="radio" value="112 R2" name='option' onClick={(ev) => setRoom(ev.target.value)} />
-              <input type="radio" value="113 R3" name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="109 R2" disabled={checkCanBeSelected(0)} name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="110 R2" disabled={checkCanBeSelected(1)} name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="111 R2" disabled={checkCanBeSelected(2)} name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="112 R2" disabled={checkCanBeSelected(3)} name='option' onClick={(ev) => setRoom(ev.target.value)} />
+              <input type="radio" value="113 R3" disabled={checkCanBeSelected(4)} name='option' onClick={(ev) => setRoom(ev.target.value)} />
 
             </div>
 
@@ -158,7 +169,7 @@ const CheckDates = () => {
             </div>
 
 
-            {[...Array(7)].map((_, i) => <div className="columns">
+            {[...Array(datesColor.length)].map((_, i) => <div className="columns">
 
               <div className="date" style={{ fontWeight: "bolder" }}>{datesColor[i]}</div>
               <div className={"" + ((colorList[i][0] === "1" ? "green1 room" : colorList[i][0] === "-1" ? "red1 room" : colorList[i][0] === "0" ? "yellow1 room" : "black1 room"))}></div>

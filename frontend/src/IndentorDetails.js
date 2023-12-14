@@ -147,8 +147,8 @@ const IndentorDetails = ({tabChange, tab}) => {
         noValidate
         autoComplete="off">
         <FormGroup style={{display:otp?"none":""}}>
-          <FormControlLabel checked={check1} control={<Checkbox value={check1} onChange={(_)=>setcheck1(!check1)}/>} label="I will be held responsible if any of these information is found false. I also undertake all the financial responsibility arising out of non-payment of loss or damage to the hall properties etc. I have read the rules and regulations of the guest room/ordinary room of Hall No. 3, and visitor and I will follow the same." />
-          <FormControlLabel checked={check2} control={<Checkbox value={check2} onChange={(_)=>setcheck2(!check2)}/>} label="I declare my complete responsibility for the conduct of my guests throughout their stay in the Guest Room. I, hereby, submit to bear the consequences of any misconduct or damage on the part of my guest during their stay in the Guest Room." />
+          <FormControlLabel className='info' checked={check1} control={<Checkbox value={check1} onChange={(_)=>setcheck1(!check1)}/>} label="I will be held responsible if any of these information is found false. I also undertake all the financial responsibility arising out of non-payment of loss or damage to the hall properties etc. I have read the rules and regulations of the guest room/ordinary room of Hall No. 3, and visitor and I will follow the same." />
+          <FormControlLabel className='info' checked={check2} control={<Checkbox value={check2} onChange={(_)=>setcheck2(!check2)}/>} label="I declare my complete responsibility for the conduct of my guests throughout their stay in the Guest Room. I, hereby, submit to bear the consequences of any misconduct or damage on the part of my guest during their stay in the Guest Room." />
         </FormGroup>
         <FormGroup style={{display:otp?"":"none"}}>
         <TextField

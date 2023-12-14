@@ -48,6 +48,13 @@
         overflow-y: scroll;
         /* border: 2px solid green; */
       }
+      .forms{
+        width: 100%;
+        overflow-x: hidden;
+      }
+      /* .container{
+        height: min-content;
+      } */
 }
 
 @media only screen and (max-width: 600px) {
