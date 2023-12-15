@@ -10,7 +10,7 @@ exports.setPassword = async(req,res)=>{
         if (newPassword.trim().length < 6) {
             return res.json({
                 success: false,
-                message: "Choose another password with minumum length of 6 with no spaces"
+                message: "Choose another password with minumum length of 6"
             })
         }
 

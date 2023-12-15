@@ -1,5 +1,10 @@
 const userSchema = require('../models/userSchema')
 const moment = require('moment')
+const bcrypt = require('bcryptjs')
+
+const bcryptPassword = async (password)=>{
+    return await bcrypt.hash(password,10)
+}
 
 exports.setPasswordValidatorOTP = async(req,res)=>{
     try {
@@ -17,7 +22,7 @@ exports.setPasswordValidatorOTP = async(req,res)=>{
 
                     userExist.OTP.value = null
                     userExist.OTP.expiryTime = null
-                    userExist.password = newPassword
+                    userExist.password = await bcryptPassword(newPassword)
 
                     await userExist.save()
 

@@ -1,6 +1,7 @@
 const { emailToNotifyWarden } = require("../mailing/emailToNotifyWarden")
 const bookingSchema = require('../models/guestRoom')
 const moment = require('moment')
+const emailOwner = require('../important_data/emailOwner')
 
 exports.checkOTP = async(req,res)=>{
     try {
@@ -15,6 +16,9 @@ exports.checkOTP = async(req,res)=>{
                 if (time2 >= time1) {
 
                     checkData.approvalLevel = "1"
+                    checkData.OTP.value = null,
+                    checkData.OTP.expiryTime = null
+
                     await checkData.save()
 
                     emailToNotifyWarden(emailOwner[0].email)

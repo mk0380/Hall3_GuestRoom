@@ -59,7 +59,7 @@ exports.details = async(req,res)=>{
 
             if (newData) {
 
-                emailToIndentorForOTP(name, otp, email, bookingId)
+                emailToIndentorForOTP(name, otp, email, result.bookingId)
 
                 res.json({
                     success: true,
@@ -81,6 +81,7 @@ exports.details = async(req,res)=>{
         }
 
     } catch (error) {
+        console.log(error.message);
         res.json({
             success: false,
             message: "Some error occured"

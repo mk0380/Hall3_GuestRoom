@@ -1,6 +1,7 @@
 const path = require('path')
 var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
+const hec = require('../important_data/hall3hec')
 
 
 const emailToIndentorForOTP = (name,otp,email,id) => {
@@ -34,7 +35,9 @@ const emailToIndentorForOTP = (name,otp,email,id) => {
       title: 'Guest Room Booking OTP for Hall 3',
       name: name,
       otp: otp,
-      id:id
+      id:id,
+      hec_name:hec[1].name,
+      hec_position:hec[1].position
     }
 
   };

@@ -27,7 +27,7 @@ const App = () => {
         <Route path='/cancelRoom' element={<CancelRoom />} />
         <Route path='/feedback' element={<Feedback />} />
         <Route path='/rules' element={<Rules />} />
-        <Route path='/prices' element={<Prices />} />
+        <Route path='/prices' element={<Prices />} /> 
       </Routes>
   )
 }

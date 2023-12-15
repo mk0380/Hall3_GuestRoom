@@ -1,5 +1,7 @@
 const validEmail = require("../important_data/validEmailLogin");
 const userSchema = require('../models/userSchema')
+const bcrypt = require('bcryptjs')
+const emailOwner = require('../important_data/emailOwner')
 
 const checkValidEmailLogin = (email) => {
     var res = false;
@@ -13,6 +15,14 @@ const checkValidEmailLogin = (email) => {
     return res
 }
 
+const bcryptPassword = async (password)=>{
+    return await bcrypt.hash(password,10)
+}
+
+const checkBcryptPassword =async (passwordEntered, actualPassword)=>{
+    return await bcrypt.compare(passwordEntered, actualPassword)
+}
+
 exports.login = async(req,res)=>{
     try {
         const { email, password } = req.body;
@@ -23,7 +33,7 @@ exports.login = async(req,res)=>{
 
             if (ifSignUp) {
 
-                if (ifSignUp.password === password) {
+                if ( await checkBcryptPassword(password, ifSignUp.password)) {
 
                     res.json({
                         success: true,
@@ -40,11 +50,10 @@ exports.login = async(req,res)=>{
 
             } else {
 
-
                 if (password.trim().length < 6) {
                     return res.json({
                         success: false,
-                        message: "Choose another password with minumum length of"
+                        message: "Choose another password with minumum length of 6"
                     })
                 }
 
@@ -58,7 +67,7 @@ exports.login = async(req,res)=>{
                     role = "hall_office"
                 }
 
-                const data = new userSchema({ email, password, role })
+                const data = new userSchema({ email, password: await bcryptPassword(password), role })
                 const result = await data.save()
 
                 res.json({
@@ -78,7 +87,6 @@ exports.login = async(req,res)=>{
         }
 
     } catch (error) {
-        console.log(error.message);
         res.json({
             success: false,
             message: "Some error occured"

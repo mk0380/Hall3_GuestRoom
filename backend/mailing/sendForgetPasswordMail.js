@@ -1,6 +1,7 @@
 const path = require('path')
 var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
+const hec = require('../important_data/hall3hec')
 
 
 const sendForgetPasswordMail = (otp,email) => {
@@ -33,6 +34,8 @@ const sendForgetPasswordMail = (otp,email) => {
     context: {
       title: 'OTP for Password Change - Guest Room Booking Portal, Hall 3',
       otp: otp,
+      name:hec[0].name,
+      position:hec[0].position
 
     }
 

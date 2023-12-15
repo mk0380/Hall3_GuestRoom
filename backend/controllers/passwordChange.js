@@ -1,4 +1,9 @@
 const userSchema = require('../models/userSchema')
+const bcrypt = require('bcryptjs')
+
+const bcryptPassword = async (password)=>{
+    return await bcrypt.hash(password,10)
+}
 
 exports.passwordChange =async (req,res)=>{
     try {
@@ -8,7 +13,7 @@ exports.passwordChange =async (req,res)=>{
         if (newPassword.trim().length < 6) {
             return res.json({
                 success: false,
-                message: "Choose another password with minumum length of 6 with no spaces"
+                message: "Choose another password with minumum length of 6"
             })
         }
 
@@ -16,7 +21,7 @@ exports.passwordChange =async (req,res)=>{
 
         if (userExist) {
 
-            userExist.password = newPassword
+            userExist.password = await bcryptPassword(newPassword)
 
             await userExist.save();
 

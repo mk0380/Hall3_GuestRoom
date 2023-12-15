@@ -11,9 +11,7 @@ exports.checkDates = async(req,res)=>{
 
         var dates = []
 
-        // const allBookings = await bookingSchema.find({});
-
-        const allBookings = [{ arrivalDate: "12/12/2023", approvalLevel: "1", departureDate: "17/12/2023", roomDetails: { roomNo: "112" } }, { arrivalDate: "16/12/2023", approvalLevel: "3", departureDate: "18/12/2023", roomDetails: { roomNo: "113" } }]
+        const allBookings = await bookingSchema.find({}).select(['arrivalDate','departureDate','roomDetails','approvalLevel']);
 
         const arrivalDates = allBookings.map(booking => booking.arrivalDate);
         const departureDates = allBookings.map(booking => booking.departureDate);

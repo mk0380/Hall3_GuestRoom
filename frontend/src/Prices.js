@@ -4,7 +4,7 @@ import pdf_link from './important_data/prices'
 const Prices = () => {
 
   useEffect(() => {
-    window.location.replace(pdf_link);
+    window.location.replace(pdf_link,'_blank');
   }, [])
 
   return (

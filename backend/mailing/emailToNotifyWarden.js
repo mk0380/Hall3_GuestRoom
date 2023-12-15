@@ -1,6 +1,7 @@
 const path = require('path')
 var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
+const hec = require('../important_data/hall3hec')
 
 
 const emailToNotifyWarden = (email) => {
@@ -31,7 +32,9 @@ const emailToNotifyWarden = (email) => {
     subject: 'Request for Guest Room Booking - Action Required',
     template: 'emailToNotifyWarden',
     context: {
-      title: 'Request for Guest Room Booking - Action Required'
+      title: 'Request for Guest Room Booking - Action Required',
+      name:hec[0].name,
+      position:hec[0].position
     }
 
   };
