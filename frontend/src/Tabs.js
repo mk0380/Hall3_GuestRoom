@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@material-ui/lab/TabContext';
@@ -6,10 +6,20 @@ import TabList from '@material-ui/lab/TabList';
 import RoomsDetails from './RoomsDetails'
 import VisitorDetails from './VisitorDetails'
 import IndentorDetails from './IndentorDetails'
+import { useNavigate } from 'react-router-dom';
 
 const Tabs = () => {
 
+    const navigate = useNavigate()
+
     const [value, setValue] = React.useState('1');
+
+    useEffect(() => {
+        if(localStorage.getItem('arrivalDate')==null){
+            navigate('/')
+        }
+    }, [])
+    
 
     return (
         <div className='home'>

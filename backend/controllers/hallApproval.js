@@ -29,7 +29,6 @@ exports.hallApproval = async (req,res) =>{
 
 
     } catch (error) {
-        console.log(error.message);
         res.json({
             success: false,
             message: "Some error occured"

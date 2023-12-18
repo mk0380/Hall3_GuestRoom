@@ -19,8 +19,8 @@ const RoomsDetails = ({tabChange, tab}) => {
   const changeHandler = (ev)=>{
     setPersons(ev.target.value)
     set_no_person_global(ev.target.value)
-    set_room_no_global(localStorage.getItem("room").split(" ")[0])
-    set_room_type_global(localStorage.getItem("room").split(" ")[1])
+    set_room_no_global(localStorage.getItem("room") && localStorage.getItem("room").split(" ")[0])
+    set_room_type_global(localStorage.getItem("room") && localStorage.getItem("room").split(" ")[1])
   }
 
   return (
@@ -34,7 +34,7 @@ const RoomsDetails = ({tabChange, tab}) => {
         <TextField
           id="outlined-read-only-input"
           label="ROOM NUMBER"
-          defaultValue={localStorage.getItem("room").split(" ")[0]}
+          defaultValue={localStorage.getItem("room") && localStorage.getItem("room").split(" ")[0]}
           InputProps={{
             readOnly: true,
           }}
@@ -42,7 +42,7 @@ const RoomsDetails = ({tabChange, tab}) => {
         <TextField
           id="outlined-read-only-input"
           label="ROOM TYPE"
-          defaultValue={localStorage.getItem("room").split(" ")[1]==="R2"?"Double Bed":"Triple Bed"}
+          defaultValue={localStorage.getItem("room") && localStorage.getItem("room").split(" ")[1]==="R2"?"Double Bed":"Triple Bed"}
           InputProps={{
             readOnly: true,
           }}

@@ -118,7 +118,7 @@ const Dashboard = () => {
   }
 
 
-  const style = {
+  var style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -134,6 +134,29 @@ const Dashboard = () => {
     scrollbarWidth: "none"
   };
 
+  const mediaQueries = {
+    '@media (max-width: 768px)': {
+      width: '90%',
+      height: '90%',
+      ".modal_content":{
+        display:'flex',
+        flexDirection:"column",
+        margin:"1rem"
+      }
+    },
+    '@media (max-width: 480px)': {
+      width: '95%',
+      height: '95%',
+      ".modal_content":{
+        display:'flex',
+        flexDirection:"column",
+        margin:"1rem"
+      }
+    }
+  };
+  
+   style = { ...style, ...mediaQueries };
+
 
   const columns = [
     { title: "Booking Id", field: "bookingId", sorting: false, align: "center" },
@@ -142,11 +165,11 @@ const Dashboard = () => {
     { title: "Phone", field: "indentorDetails.phone", sorting: false, align: "center" },
     { title: "Amount", field: "totalCost", align: "center"},
     {
-      title: "Details", field: "detail", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid") }} onClick={handleClickOpen}disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>Details</Button>
+      title: "Details", field: "detail", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#197CD2" }} onClick={handleClickOpen} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>Details</Button>
       </IconButton>)
     },
     {
-      title: "Action", field: "action", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#5cb85c"}} onClick={()=>setOpen(!open)} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>{rowData.approvalLevel === "2"?"Payment 1":rowData.approvalLevel === "3"?"Payment 2":"Accept"}</Button>
+      title: "Action", field: "action", align: "center", sorting: false, export: false, render: (rowData) => rowData && (<><IconButton><Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#5cb85c"}} onClick={()=>{setOpen(false); setChildModal(false); setOpen(!open);}} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>{rowData.approvalLevel === "2"?"Payment 1":rowData.approvalLevel === "3"?"Payment 2":"Accept"}</Button>
       </IconButton>
         <IconButton>
           <Button variant="contained" style={{ padding: "0 5px", background: (rowData.status === "Rejected" || rowData.status === "Paid")? "white":"#d9534f" }} onClick={rejectHandler2} disabled={rowData.status ==="Rejected" || rowData.status === "Paid"}>Reject</Button>

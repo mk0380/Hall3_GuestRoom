@@ -32,8 +32,6 @@ exports.checkDates = async(req,res)=>{
                 
                 const isWithinRange = formattedArrivalDate.isValid() && formattedDate.isValid() && formattedDepartureDate.isValid() && formattedArrivalDate.isSameOrBefore(formattedDate) && formattedDepartureDate.isSameOrAfter(formattedDate);
 
-                    // console.log(isWithinRange1);
-
                     if(isWithinRange){
                         if(roomNos[index] == "109"){
                             if(approvalLevel[index]=="1" || approvalLevel[index]=="2"){

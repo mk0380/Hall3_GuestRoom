@@ -60,7 +60,7 @@ const IndentorDetails = ({tabChange, tab}) => {
   }
 
   const checkOTPHandler =async ()=>{
-    const {data} = await axios.post(BACKEND_URL+'/checkOTP',{otp_password, requestId},config)
+    const {data} = await axios.post(BACKEND_URL+'/checkOTP',{otp_password, requestId, room_no_global, arrivalDate:localStorage.getItem("arrivalDate"), departureDate:localStorage.getItem("departureDate") },config)
     setOtp_password("")
     if(data.success){
       toast.success(data.message)

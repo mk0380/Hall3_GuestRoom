@@ -1,6 +1,7 @@
 const path = require('path')
 var nodemailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
+const hec = require('../important_data/hall3hec');
 
 
 const rejectionEmail = (email, reason, name, id) => {
@@ -34,7 +35,9 @@ const rejectionEmail = (email, reason, name, id) => {
       title: `Rejection of Guest Room Booking Request[Booking ID:${id}]`,
       reason: reason,
       name:name,
-      id:id
+      id:id,
+      hec_name:hec[1].name,
+      hec_position:hec[1].position
     }
 
   };

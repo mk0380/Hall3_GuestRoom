@@ -1,5 +1,6 @@
 const { approvalEmail } = require("../mailing/approvalEmail");
 const bookingSchema = require('../models/guestRoom')
+const percentageCharged = 0.1
 
  exports.wardenApproval = async(req,res)=>{ 
       try {
@@ -10,7 +11,7 @@ const bookingSchema = require('../models/guestRoom')
 
         if (bookingData) {
 
-            approvalEmail(bookingData.indentorDetails.email, parseInt(Math.ceil(bookingData.totalCost * 0.1)), bookingData.indentorDetails.name, bookingData.bookingId)
+            approvalEmail(bookingData.indentorDetails.email, parseInt(Math.ceil(bookingData.totalCost * percentageCharged)), bookingData.indentorDetails.name, bookingData.bookingId)
 
             res.json({
                 success: true,
